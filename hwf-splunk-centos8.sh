@@ -1,0 +1,340 @@
+#!/bin/bash
+
+# 11/05/20 John Barnett
+# Script created on / for CentOS 7
+# Community script to create a Splunk syslog-ng heavy forwarder from scratch, use at your own risk
+# 
+
+################################################################################################################
+## Set password in the script or change it after - default password used by the script is Bz9!SV8VdRiYiman  ####
+################################################################################################################
+
+################################################################################################################
+## It is designed to run once and assumes a clean system and takes little care as to any existing config    ####
+################################################################################################################
+
+# Handy commands for troubleshooting
+## tcpdump -i eth0 'port 514' ## see the flow over a port as events are received (or not)
+## /usr/sbin/syslog-ng -F -p /var/run/syslogd.pid ## run syslog-ng and see more errors
+## 0 5 * * * /bin/find /var/log/splunklogs/ -type f -name \*.log -mtime +1 -exec rm {} \; ## cronat to delete files off every day at 5am older than 1 day
+## multitail -s 2 /var/log/splunklogs/*/*/*.log  /opt/splunk/var/log/splunk/splunkd.log  ## monitor all the files in the splunk dir
+## syslog-ng-ctl stats
+
+
+# Create users
+adduser syslog-ng
+adduser splunk
+
+# Add users to group required
+groupadd splunk
+usermod -aG splunk syslog-ng
+usermod -aG splunk splunk
+
+mkdir /var/log/splunklogs
+mkdir /var/log/splunklogs/catch_all/
+mkdir /var/log/splunklogs/cisco/
+mkdir /var/log/splunklogs/cisco/asa/
+mkdir /var/log/splunklogs/paloalto/
+mkdir /var/log/splunklogs/fortinet/
+
+chown -R syslog-ng:splunk /var/log/splunklogs
+
+
+#Show original state
+firewall-cmd --list-all
+#Splunk ports
+firewall-cmd --zone=public --add-port=8000/tcp --permanent # Web UI Port
+firewall-cmd --zone=public --add-port=8080/tcp --permanent # HEC port
+firewall-cmd --zone=public --add-port=8088/tcp --permanent # HEC port
+firewall-cmd --zone=public --add-port=8089/tcp --permanent # Managment Port
+firewall-cmd --zone=public --add-port=9997/tcp --permanent # Data flow
+#Syslog listeners
+firewall-cmd --zone=public --add-port=514/tcp --permanent
+#firewall-cmd --zone=public --add-port=1514/tcp --permanent
+#firewall-cmd --zone=public --add-port=1515/tcp --permanent
+#firewall-cmd --zone=public --add-port=1516/tcp --permanent
+#firewall-cmd --zone=public --add-port=1517/tcp --permanent
+#firewall-cmd --zone=public --add-port=1518/tcp --permanent
+#firewall-cmd --zone=public --add-port=1514/udp --permanent
+firewall-cmd --zone=public --add-port=514/udp --permanent
+#reload the setting to take effect
+firewall-cmd --reload
+#Check applied
+firewall-cmd --list-all
+
+# Deal with THP
+# https://docs.splunk.com/Documentation/Splunk/7.2.5/ReleaseNotes/SplunkandTHP
+
+# Check THP status
+cat /sys/kernel/mm/transparent_hugepage/enabled
+cat /sys/kernel/mm/transparent_hugepage/defrag
+
+# Disable THP at boot
+echo "
+## Created with JB Splunk Install script by magic
+ [Unit]
+ Description=Disable Transparent Huge Pages (THP)
+ 
+ [Service]
+ Type=simple
+ ExecStart=/bin/sh -c \"echo \'never\' > /sys/kernel/mm/transparent_hugepage/enabled && echo \'never\' > /sys/kernel/mm/transparent_hugepage/defrag\"
+ 
+ [Install]
+ WantedBy=multi-user.target
+" >  /etc/systemd/system/disable-thp.service
+
+sudo systemctl daemon-reload
+
+# Start the disable-thp daemon
+systemctl start disable-thp
+
+# Disable THP at startup
+systemctl enable disable-thp
+
+# THP now diabled
+cat /sys/kernel/mm/transparent_hugepage/enabled
+cat /sys/kernel/mm/transparent_hugepage/defrag
+
+# Set file limits
+
+mkdir /etc/systemd/user.conf.d/
+
+echo "
+## Created with JB Splunk Install script by magic
+## https://docs.splunk.com/Documentation/Splunk/8.0.3/Installation/Systemrequirements#Considerations_regarding_system-wide_resource_limits_on_.2Anix_systems
+[Manager]
+DefaultLimitFSIZE=-1
+DefaultLimitNOFILE=64000
+DefaultLimitNPROC=16000
+#LimitFSIZE=infinity   # A setting of infinity sets the file size to unlimited.
+#LimitDATA=8000000000  #8GB - The maximum RAM you want Splunk Enterprise to allocate in bytes
+#TasksMax=16000        #The maximum number of tasks that a service can create. This setting aligns with the user process limit LimitNPROC and the value can be set to match. For example, 16000
+" > /etc/systemd/user.conf.d/splunk.conf
+
+
+#Update package lists
+yum update -y
+
+# Install tools
+yum install nano  wget tcpdump -y
+
+find /usr/share/nano -name '*.nanorc' -printf "include %p\n" > ~/.nanorc
+
+# get the repo
+wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+rpm -Uvh epel-release-latest-7.noarch.rpm
+
+# add repo to yum
+cd /etc/yum.repos.d/
+
+wget https://copr.fedorainfracloud.org/coprs/czanik/syslog-ng319/repo/epel-7/czanik-syslog-ng319-epel-7.repo
+yum install syslog-ng multitail htop iptraf-ng -y
+
+# remove default sysloger
+yum erase rsyslog -y
+
+
+# Add syslog listener
+echo "
+## Created with JB Splunk Install script by magic
+# syslog-ng configuration file.
+# https://www.splunk.com/blog/2016/03/11/using-syslog-ng-with-splunk.html
+#
+@version: 3.5
+    options {
+        chain_hostnames(no);
+        create_dirs (yes);
+        dir_perm(0755);
+        dns_cache(yes);
+        keep_hostname(yes);
+        log_fifo_size(2048);
+        log_msg_size(8192);
+        perm(0644);
+        time_reopen (10);
+        use_dns(yes);
+        use_fqdn(yes);
+        };
+    source s_network {
+        syslog(transport(udp) port(514));
+        };
+
+
+#Destinations
+    destination d_cisco_asa { file(\"/var/log/splunklogs/cisco/asa/\$HOST/\$YEAR-\$MONTH-\$DAY-cisco-asa.log\" owner(\"splunk\") group(\"splunk\") perm(0775) create_dirs(yes)); };
+    destination d_fortinet { file(\"/var/log/splunklogs/fortinet/\$HOST/\$YEAR-\$MONTH-\$DAY-fortigate.log\" owner(\"splunk\") group(\"splunk\") perm(0775) create_dirs(yes)); };
+    destination d_juniper { file(\"/var/log/splunklogs/juniper/junos/\$HOST/\$YEAR-\$MONTH-\$DAY-juniper-junos.log\" owner(\"splunk\") group(\"splunk\") perm(0775) create_dirs(yes)); };
+    destination d_palo_alto { file(\"/var/log/splunklogs/paloalto/\$HOST/\$YEAR-\$MONTH-\$DAY-palo.log\" owner(\"splunk\") group(\"splunk\") perm(0775) create_dirs(yes)); };
+    destination d_all { file(\"/var/log/splunklogs/catch_all/\$HOST/\$YEAR-\$MONTH-\$DAY-catch_all.log\" owner(\"splunk\") group(\"splunk\") perm(0775) create_dirs(yes)); };
+
+
+
+# Filters
+    filter f_cisco_asa { match(\"%ASA\" value(\"PROGRAM\")) or match(\"%ASA\" value(\"MESSAGE\")); };
+    filter f_fortinet { match(\"devid=FG\" value(\"PROGRAM\")) or host(\"masu\") or match(\"devid=FG\" value(\"MESSAGE\")); };
+    filter f_juniper { match(\"junos\" value(\"PROGRAM\")) or host(\"Internet\") or host(\"150.1.156.30\") or host(\"150.1.128.10\") or match(\"junos\" value(\"MESSAGE\")) or match(\"RT_FLOW:\" value(\"MESSAGE\")); };
+    filter f_palo_alto { host(\"PA101\") or host(\"PA201\"); };
+    filter f_all { not (
+    filter(f_cisco_asa) or
+    filter(f_fortinet) or
+    filter(f_juniper) or
+    filter(f_palo_alto)
+    );
+};
+# Log
+    log { source(s_network); filter(f_cisco_asa); destination(d_cisco_asa); };
+    log { source(s_network); filter(f_fortinet); destination(d_fortinet); };
+    log { source(s_network); filter(f_juniper); destination(d_juniper); };
+    log { source(s_network); filter(f_palo_alto); destination(d_palo_alto); };
+    log { source(s_network); filter(f_all); destination(d_all); };
+
+" >  /etc/syslog-ng/conf.d/listeners_4_splunk.conf
+
+
+#enable syslog-ng
+systemctl enable syslog-ng
+systemctl start syslog-ng
+
+# add Splunk
+cd /opt
+mkdir splunk
+
+#wget -O splunk-7.2.5.1-962d9a8e1586-Linux-x86_64.tgz 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=7.2.5.1&product=splunk&filename=splunk-7.2.5.1-962d9a8e1586-Linux-x86_64.tgz&wget=true'
+#wget -O splunk-7.3.0-657388c7a488-Linux-x86_64.tgz 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=7.3.0&product=splunk&filename=splunk-7.3.0-657388c7a488-Linux-x86_64.tgz&wget=true'
+wget -O splunk-8.0.3-a6754d8441bf-Linux-x86_64.tgz 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=8.0.3&product=splunk&filename=splunk-8.0.3-a6754d8441bf-Linux-x86_64.tgz&wget=true'
+
+#tar -xf splunk-7.2.5.1-962d9a8e1586-Linux-x86_64.tgz
+#tar -xf splunk-7.3.0-657388c7a488-Linux-x86_64.tgz
+tar -xf splunk-8.0.3-a6754d8441bf-Linux-x86_64.tgz
+
+chown -R splunk:splunk splunk
+
+# Skip Splunk Tour and Change Password Dialog
+touch /opt/splunk/etc/.ui_login
+
+# Add listener for splunk TCP 9997 (for UF and other HWF)
+
+mkdir /opt/splunk/etc/apps/9997_listener
+mkdir /opt/splunk/etc/apps/9997_listener/local
+
+echo "
+## Created with JB Splunk Install script by magic
+[splunktcp://9997]
+disabled = 0
+" > /opt/splunk/etc/apps/9997_listener/local/inputs.conf
+
+# Add file monitors for syslog-ng
+
+mkdir /opt/splunk/etc/apps/syslogng_monitors
+mkdir /opt/splunk/etc/apps/syslogng_monitors/local
+
+echo "
+## Created with JB Splunk Install script by magic
+# Palo
+[monitor:///var/log/splunklogs/paloalto/*/*.log]
+sourcetype = pan:log
+index = pan
+disabled = false
+host_segment = 5
+
+# Cisco ASA
+[monitor:///var/log/splunklogs/cisco/asa/*/*.log]
+sourcetype = cisco:asa
+index = cisco
+disabled = true
+host_segment = 6
+
+# Fortinet
+[monitor:///var/log/splunklogs/fortinet/*/*fortigate.log]
+sourcetype = fgt_log
+index = fortinet
+disabled = false
+host_segment = 5
+
+# Juniper
+[monitor:///var/log/splunklogs/juniper/junos/*/*.log]
+sourcetype = juniper
+index = juniper
+disabled = false
+host_segment = 6
+" > /opt/splunk/etc/apps/syslogng_monitors/local/inputs.conf
+
+
+# Enable SSL Login for Splunk
+echo "Enable WebUI TLS"
+ 
+echo "
+## Created with JB Splunk Install script by magic
+[settings]
+httpport = 8000
+enableSplunkWebSSL = true
+login_content = Welcome to Splunk hwf, Splunk FTW!
+" > /opt/splunk/etc/system/local/web.conf
+
+########################## Adding the TAs
+cd /opt
+
+wget https://johnb-bucket-pub.s3-ap-southeast-2.amazonaws.com/dc/dc_apps.tar
+
+tar -xf dc_apps.tar
+
+cd /opt/dc_apps
+
+for f in *.tar.gz; do tar -zxvf "$f" -C /opt/splunk/etc/apps/; done
+
+for f in *.tar; do tar -xvf "$f" -C /opt/splunk/etc/apps/; done
+
+for f in *.tgz; do tar -xvf "$f" -C /opt/splunk/etc/apps/; done
+
+########################## Adding the deployment apps
+cd /opt
+
+wget https://johnb-bucket-pub.s3-ap-southeast-2.amazonaws.com/dc/dc_dep_apps.tar
+
+tar -xf dc_dep_apps.tar
+
+cd /opt/dc_dep_apps
+
+for f in *.tar.gz; do tar -zxvf "$f" -C /opt/splunk/etc/deployment-apps/; done
+
+for f in *.tgz; do tar -xvf "$f" -C /opt/splunk/etc/deployment-apps/; done
+
+for f in *.tar; do tar -xvf "$f" -C /opt/splunk/etc/deployment-apps/; done
+
+
+echo "Starting Splunk - fire it up!! and enabling Splunk to start at boot time with user=splunk "
+
+#echo "Enter auth to enable deployment server"
+
+/opt/splunk/bin/splunk enable boot-start -user splunk --accept-license --seed-passwd Bz9!SV8VdRiYiman --answer-yes --auto-ports --no-prompt
+
+#!!! configure this if the HWF is not the deplyment server too
+#opt/splunk/bin/splunk set deploy-poll depserver:8089
+
+#/opt/splunk/bin/splunk stop
+
+chown -R splunk:splunk /opt/splunk
+
+/opt/splunk/bin/splunk start
+
+
+
+# Reboot Splunk to make changes take effect
+
+echo "
+#################################################################
+########## Installation complete
+#################################################################
+########## for splunk https://<server-ip>:8000
+########## user = admin password=the one in the script you set
+#################################################################"
+
+curl -k https://localhost:8000
+
+# command below should trigger syslog-ng to log an event for Splunk to collect
+logger -n 127.0.0.1 -P 514 " **** cisco test event **** Apr 07 01:59:19: %ASA-4-338002: Dynamic Filter monitored blacklisted TCP traffic from CyberRange-Dev-Red:224.10.25.172/56290 (224.10.25.172/56290) to Backbone:224.10.25.172/80 (224.10.25.172/80), destination 224.10.25.172 resolved from dynamic list: 224.10.25.172, threat-level: very-high, category: Malware"
+logger -n 127.0.0.1 -P 514 " **** catchall test event **** Apr 07 01:59:19: **** catchall: **** test event **** "
+logger -n 127.0.0.1 -P 514 " **** juniper test event **** 1 2019-04-08T20:17:19.120+12:00 Internet RT_FLOW - RT_FLOW_SESSION_CREATE [junos@2636.1.1.1.2.40 source-address="10.176.101.11" source-port="59627" destination-address="192.168.10.25" destination-port="8400" service-name="None" nat-source-address="10.176.101.11" nat-source-port="59627" nat-destination-address="192.168.10.25" nat-destination-port="8400" src-nat-rule-name="None" dst-nat-rule-name="None" protocol-id="6" policy-name="248" source-zone-name="Trust" destination-zone-name="DMZ_AUX2" session-id-32="138471" username="N/A" roles="N/A" packet-incoming-interface="reth0.0"] session created 10.176.101.11/59627->192.168.10.25/8400 None 10.176.101.11/59627->192.168.10.25/8400 None None 6 248 Trust DMZ_2_AUX2 138471 N/A(N/A) reth0.0"
+logger -n 127.0.0.1 -P 514 " **** fortinet test event **** date=2019-04-08,time=20:33:26,devname=AklCfg3kUnitB,devid=FG3K2C3800511,logid=0315012544,type=utm,subtype=webfilter,eventtype=urlfilter,level=warning,vd="ACorp",urlfilteridx=3,urlfilterlist="Microsoft-Wildcard",policyid=4303,sessionid=3097985850,user="",srcip=10.250.35.24,srcport=54653,srcintf="V1215-EPZP",dstip=54.214.227.245,dstport=443,dstintf="root",proto=6,service=HTTPS,hostname="aztec.brightmail.com",profile="Microsoft-Wildcard",action=blocked,reqtype=direct,url="/",sentbyte=346,rcvdbyte=3523,direction=outgoing,msg="URL was blocked because it is in the URL filter list",crscore=30,crlevel=high"
+logger -n 127.0.0.1 -P 514 " **** PA test event **** May 18 16:03:28 fooo.com 1,2020/05/18 16:03:28,001801022884,TRAFFIC,end,2049,2020/05/18 16:03:28,47.188.78.148,288.101.54.151,0.0.0.0,0.0.0.0,VWIRE-Rule-myrule,,,incomplete,vsys1,myrule-Outside,myrule-Inside,ethernet1/6,ethernet1/5,SYS Log,2020/05/18 16:03:28,120303,1,48750,88,0,0,0x19,tcp,allow,60,60,0,1,2020/05/18 16:03:21,0,any,0,6870676205,0x8000000000000000,United States,New Zealand,0,1,0,aged-out,0,0,0,0,,PA101,from-policy,,,0,,0,,N/A,0,0,0,0
+
+multitail -s 2 /var/log/splunklogs/*/*/*.log  /opt/splunk/var/log/splunk/splunkd.log
