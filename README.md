@@ -1,4 +1,4 @@
-# community splunk build scripts
+# Community build scripts to create a basic splunk node or heavy forwarder
 
 ## Purpose
 
