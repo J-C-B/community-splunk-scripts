@@ -14,11 +14,11 @@
 ################################################################################################################
 
 # Handy commands for troubleshooting
-## tcpdump -i eth0 'port 514' ## see the flow over a port as events are received (or not)
-## /usr/sbin/syslog-ng -F -p /var/run/syslogd.pid ## run syslog-ng and see more errors
-## 0 5 * * * /bin/find /var/log/splunklogs/ -type f -name \*.log -mtime +1 -exec rm {} \; ## cronat to delete files off every day at 5am older than 1 day
-## multitail -s 2 /var/log/splunklogs/*/*/*.log  /opt/splunk/var/log/splunk/splunkd.log  ## monitor all the files in the splunk dir
-## syslog-ng-ctl stats
+## tcpdump -i eth0 'port 514'                                                               ## see the flow over a port as events are received (or not)
+## /usr/sbin/syslog-ng -F -p /var/run/syslogd.pid                                           ## run syslog-ng and see more errors
+## 0 5 * * * /bin/find /var/log/splunklogs/ -type f -name \*.log -mtime +1 -exec rm {} \;   ## add this crontab to delete files off every day at 5am older than 1 day
+## multitail -s 2 /var/log/splunklogs/*/*/*.log  /opt/splunk/var/log/splunk/splunkd.log     ## monitor all the files in the splunk dir
+## syslog-ng-ctl stats                                                                      ## See the stats for each filter
 
 
 # Create users
