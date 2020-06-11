@@ -12,3 +12,4 @@ This repo is for community scripts to be shared from.
 * The addons installed are from a static `.tar` so may be out of date, update if required after script run
 * For splunk cloud customers, contact support for a free heavy forwarder licence
 * These scripts are designed to be run on a vanilla fresh install, they take no care for any existing configuration
+* If you are creating a golden image, run this command before locking to prevent duplicate guids etc `/opt/splunk/bin/splunk clone-prep-clear-config`
