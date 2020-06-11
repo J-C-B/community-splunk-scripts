@@ -1,9 +1,10 @@
 #!/bin/bash
 
-# 11/05/20 John Barnett
-# Script created on / for CentOS 7
+# 11/06/20 John Barnett
+# Script created on / for CentOS 8 ONLY
+
+
 # Community script to create a Splunk syslog-ng heavy forwarder from scratch, use at your own risk
-# 
 
 ################################################################################################################
 ## Set password in the script or change it after - default password used by the script is Bz9!SV8VdRiYiman  ####
@@ -21,14 +22,15 @@
 ## syslog-ng-ctl stats                                                                      ## See the stats for each filter
 
 
+
+
 # Create users
 adduser syslog-ng
 adduser splunk
 
 # Add users to group required
-groupadd splunk
-usermod -aG splunk syslog-ng
-usermod -aG splunk splunk
+usermod -aG wheel syslog-ng
+usermod -aG wheel splunk
 
 mkdir /var/log/splunklogs
 mkdir /var/log/splunklogs/catch_all/
@@ -37,7 +39,7 @@ mkdir /var/log/splunklogs/cisco/asa/
 mkdir /var/log/splunklogs/paloalto/
 mkdir /var/log/splunklogs/fortinet/
 
-chown -R syslog-ng:splunk /var/log/splunklogs
+chown -R syslog-ng:wheel /var/log/splunklogs
 
 
 #Show original state
@@ -112,26 +114,27 @@ DefaultLimitNPROC=16000
 " > /etc/systemd/user.conf.d/splunk.conf
 
 
+# remove default sysloger
+dnf erase rsyslog -y
+
 #Update package lists
-yum update -y
+dnf update -y
 
 # Install tools
-yum install nano  wget tcpdump -y
+dnf install nano  wget tcpdump -y
 
 find /usr/share/nano -name '*.nanorc' -printf "include %p\n" > ~/.nanorc
 
 # get the repo
-wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-rpm -Uvh epel-release-latest-7.noarch.rpm
+dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm -y
+dnf config-manager --set-enabled PowerTools
 
-# add repo to yum
-cd /etc/yum.repos.d/
+#!!! Deleteme maybe
+# add repo to dnf
+#cd /etc/dnf.repos.d/
+#wget https://copr.fedorainfracloud.org/coprs/czanik/syslog-ng319/repo/epel-7/czanik-syslog-ng319-epel-8.repo
 
-wget https://copr.fedorainfracloud.org/coprs/czanik/syslog-ng319/repo/epel-7/czanik-syslog-ng319-epel-7.repo
-yum install syslog-ng multitail htop iptraf-ng -y
-
-# remove default sysloger
-yum erase rsyslog -y
+dnf install syslog-ng multitail htop iptraf-ng -y
 
 
 # Add syslog listener
@@ -172,7 +175,7 @@ echo "
     filter f_cisco_asa { match(\"%ASA\" value(\"PROGRAM\")) or match(\"%ASA\" value(\"MESSAGE\")); };
     filter f_fortinet { match(\"devid=FG\" value(\"PROGRAM\")) or host(\"masu\") or match(\"devid=FG\" value(\"MESSAGE\")); };
     filter f_juniper { match(\"junos\" value(\"PROGRAM\")) or host(\"Internet\") or host(\"150.1.156.30\") or host(\"150.1.128.10\") or match(\"junos\" value(\"MESSAGE\")) or match(\"RT_FLOW:\" value(\"MESSAGE\")); };
-    filter f_palo_alto { host(\"PA101\") or host(\"PA201\"); };
+    filter f_palo_alto { match(\"009401000570\" value(\"PROGRAM\")) or match(\"009401000570\" value(\"MESSAGE\")); };
     filter f_all { not (
     filter(f_cisco_asa) or
     filter(f_fortinet) or
@@ -206,7 +209,7 @@ wget -O splunk-8.0.3-a6754d8441bf-Linux-x86_64.tgz 'https://www.splunk.com/bin/s
 #tar -xf splunk-7.3.0-657388c7a488-Linux-x86_64.tgz
 tar -xf splunk-8.0.3-a6754d8441bf-Linux-x86_64.tgz
 
-chown -R splunk:splunk splunk
+chown -R splunk:wheel splunk
 
 # Skip Splunk Tour and Change Password Dialog
 touch /opt/splunk/etc/.ui_login
@@ -258,18 +261,6 @@ disabled = false
 host_segment = 6
 " > /opt/splunk/etc/apps/syslogng_monitors/local/inputs.conf
 
-
-# Enable SSL Login for Splunk
-echo "Enable WebUI TLS"
- 
-echo "
-## Created with JB Splunk Install script by magic
-[settings]
-httpport = 8000
-enableSplunkWebSSL = true
-login_content = Welcome to Splunk hwf, Splunk FTW!
-" > /opt/splunk/etc/system/local/web.conf
-
 ########################## Adding the TAs
 cd /opt
 
@@ -301,24 +292,23 @@ for f in *.tgz; do tar -xvf "$f" -C /opt/splunk/etc/deployment-apps/; done
 for f in *.tar; do tar -xvf "$f" -C /opt/splunk/etc/deployment-apps/; done
 
 
-echo "Starting Splunk - fire it up!! and enabling Splunk to start at boot time with user=splunk "
+# Enable SSL Login for Splunk
+echo "Enable WebUI TLS"
+ 
+echo "
+[settings]
+httpport = 8000
+enableSplunkWebSSL = true
+login_content = Welcome to your Splunk hwf, Splunk FTW!
+" > /opt/splunk/etc/system/local/web.conf
 
-#echo "Enter auth to enable deployment server"
+chown -R splunk:wheel /opt/splunk
+
+echo "Starting Splunk - fire it up!! and enabling Splunk to start at boot time with user=splunk "
 
 /opt/splunk/bin/splunk enable boot-start -user splunk --accept-license --seed-passwd Bz9!SV8VdRiYiman --answer-yes --auto-ports --no-prompt
 
-#!!! configure this if the HWF is not the deplyment server too
-#opt/splunk/bin/splunk set deploy-poll depserver:8089
-
-#/opt/splunk/bin/splunk stop
-
-chown -R splunk:splunk /opt/splunk
-
 /opt/splunk/bin/splunk start
-
-
-
-# Reboot Splunk to make changes take effect
 
 echo "
 #################################################################
@@ -339,6 +329,7 @@ logger -n 127.0.0.1 -P 514 " **** fortinet test event **** date=2019-04-08,time=
 
 multitail -s 2 /var/log/splunklogs/*/*/*.log  /opt/splunk/var/log/splunk/splunkd.log
 
+
+
 ## If you are creating a golden image, run this command before locking to prevent duplicate guids etc
 # /opt/splunk/bin/splunk clone-prep-clear-config
-
