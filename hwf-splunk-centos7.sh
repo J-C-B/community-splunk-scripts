@@ -4,6 +4,7 @@
 # Script created on / for CentOS 7
 # Community script to create a Splunk syslog-ng heavy forwarder from scratch, use at your own risk
 # 
+# wget https://gitlab.com/J-C-B/community-splunk-build-scripts/-/raw/master/hwf-splunk-centos7.sh
 
 ################################################################################################################
 ## Set password in the script or change it after - default password used by the script is Bz9!SV8VdRiYiman  ####
@@ -222,7 +223,7 @@ echo "
 disabled = 0
 " > /opt/splunk/etc/apps/9997_listener/local/inputs.conf
 
-## Add file monitors for syslog-ng
+# Add file monitors for syslog-ng
 
 mkdir /opt/splunk/etc/apps/syslogng_monitors
 mkdir /opt/splunk/etc/apps/syslogng_monitors/local
@@ -368,4 +369,3 @@ multitail -s 2 /var/log/splunklogs/*/*/*.log  /opt/splunk/var/log/splunk/splunkd
 
 ## If you are creating a golden image, run this command before locking to prevent duplicate guids etc
 # /opt/splunk/bin/splunk clone-prep-clear-config
-
