@@ -222,10 +222,37 @@ echo "
 disabled = 0
 " > /opt/splunk/etc/apps/9997_listener/local/inputs.conf
 
-# Add file monitors for syslog-ng
+## Add file monitors for syslog-ng
 
 mkdir /opt/splunk/etc/apps/syslogng_monitors
 mkdir /opt/splunk/etc/apps/syslogng_monitors/local
+
+echo "
+## Created with JB Splunk Install script by magic
+
+[pan]
+homePath   = \$SPLUNK_DB/\$_index_name/db
+coldPath   = \$SPLUNK_DB/\$_index_name/colddb
+thawedPath = \$SPLUNK_DB/pan/thaweddb
+
+[cisco]
+homePath   = \$SPLUNK_DB/\$_index_name/db
+coldPath   = \$SPLUNK_DB/\$_index_name/colddb
+thawedPath = \$SPLUNK_DB/cisco/thaweddb
+
+[fortinet]
+homePath   = \$SPLUNK_DB/\$_index_name/db
+coldPath   = \$SPLUNK_DB/\$_index_name/colddb
+thawedPath = \$SPLUNK_DB/fortinet/thaweddb
+
+[juniper]
+homePath   = \$SPLUNK_DB/\$_index_name/db
+coldPath   = \$SPLUNK_DB/\$_index_name/colddb
+thawedPath = \$SPLUNK_DB/juniper/thaweddb
+
+
+" > /opt/splunk/etc/apps/syslogng_monitors/local/indexes.conf
+
 
 echo "
 ## Created with JB Splunk Install script by magic
