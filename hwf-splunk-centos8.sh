@@ -234,24 +234,24 @@ echo "
 ## Created with JB Splunk Install script by magic
 
 [pan]
-homePath   = $SPLUNK_DB/$_index_name/db
-coldPath   = $SPLUNK_DB/$_index_name/colddb
-thawedPath = $SPLUNK_DB/pan/thaweddb
+homePath   = \$SPLUNK_DB/\$_index_name/db
+coldPath   = \$SPLUNK_DB/\$_index_name/colddb
+thawedPath = \$SPLUNK_DB/pan/thaweddb
 
 [cisco]
-homePath   = $SPLUNK_DB/$_index_name/db
-coldPath   = $SPLUNK_DB/$_index_name/colddb
-thawedPath = $SPLUNK_DB/cisco/thaweddb
+homePath   = \$SPLUNK_DB/\$_index_name/db
+coldPath   = \$SPLUNK_DB/\$_index_name/colddb
+thawedPath = \$SPLUNK_DB/cisco/thaweddb
 
 [fortinet]
-homePath   = $SPLUNK_DB/$_index_name/db
-coldPath   = $SPLUNK_DB/$_index_name/colddb
-thawedPath = $SPLUNK_DB/fortinet/thaweddb
+homePath   = \$SPLUNK_DB/\$_index_name/db
+coldPath   = \$SPLUNK_DB/\$_index_name/colddb
+thawedPath = \$SPLUNK_DB/fortinet/thaweddb
 
 [juniper]
-homePath   = $SPLUNK_DB/$_index_name/db
-coldPath   = $SPLUNK_DB/$_index_name/colddb
-thawedPath = $SPLUNK_DB/juniper/thaweddb
+homePath   = \$SPLUNK_DB/\$_index_name/db
+coldPath   = \$SPLUNK_DB/\$_index_name/colddb
+thawedPath = \$SPLUNK_DB/juniper/thaweddb
 
 
 " > /opt/splunk/etc/apps/syslogng_monitors/local/indexes.conf
