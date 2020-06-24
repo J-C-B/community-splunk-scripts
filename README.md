@@ -6,7 +6,7 @@ This repo is for community scripts to be shared from.
 
 ****These scripts are community focused and not supported or endorsed by Splunk, use at your own risk****
 
-## Usage and instalation guide
+## Video and installation guide for centos HWF scripts
 
 https://www.youtube.com/channel/UCnJs921W67iy2LdBzr8kC2A
 
