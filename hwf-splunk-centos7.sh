@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# 11/05/20 John Barnett
+# 24/06/2020 John Barnett
 # Script created on / for CentOS 7
 # Community script to create a Splunk syslog-ng heavy forwarder from scratch, use at your own risk
-# 
-# wget https://gitlab.com/J-C-B/community-splunk-build-scripts/-/raw/master/hwf-splunk-centos7.sh
+# Project home = https://gitlab.com/J-C-B/community-splunk-scripts
+# wget https://gitlab.com/J-C-B/community-splunk-scripts/-/raw/master/hwf-splunk-centos7.sh
 
 ################################################################################################################
 ## Set password in the script or change it after - default password used by the script is Bz9!SV8VdRiYiman  ####
