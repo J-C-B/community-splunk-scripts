@@ -30,8 +30,9 @@ adduser syslog-ng
 adduser splunk
 
 # Add users to group required
-usermod -aG wheel syslog-ng
-usermod -aG wheel splunk
+groupadd splunk
+usermod -aG splunk syslog-ng
+usermod -aG splunk splunk
 
 mkdir /var/log/splunklogs
 mkdir /var/log/splunklogs/catch_all/
@@ -40,7 +41,7 @@ mkdir /var/log/splunklogs/cisco/asa/
 mkdir /var/log/splunklogs/paloalto/
 mkdir /var/log/splunklogs/fortinet/
 
-chown -R syslog-ng:wheel /var/log/splunklogs
+chown -R syslog-ng:splunk /var/log/splunklogs
 
 
 #Show original state
@@ -205,7 +206,7 @@ wget -O splunk-8.0.3-a6754d8441bf-Linux-x86_64.tgz 'https://www.splunk.com/bin/s
 #tar -xf splunk-7.3.0-657388c7a488-Linux-x86_64.tgz
 tar -xf splunk-8.0.3-a6754d8441bf-Linux-x86_64.tgz
 
-chown -R splunk:wheel splunk
+chown -R splunk:splunk splunk
 
 # Skip Splunk Tour and Change Password dialogue
 touch /opt/splunk/etc/.ui_login
@@ -325,7 +326,7 @@ enableSplunkWebSSL = true
 login_content = Welcome to your Splunk hwf, Splunk FTW!
 " > /opt/splunk/etc/system/local/web.conf
 
-chown -R splunk:wheel /opt/splunk
+chown -R splunk:splunk /opt/splunk
 
 echo "Starting Splunk - fire it up!! and enabling Splunk to start at boot time with user=splunk "
 
