@@ -92,7 +92,7 @@ systemctl start disable-thp
 # Disable THP at startup
 systemctl enable disable-thp
 
-# THP now diabled
+# THP now disabled
 cat /sys/kernel/mm/transparent_hugepage/enabled
 cat /sys/kernel/mm/transparent_hugepage/defrag
 
@@ -209,7 +209,7 @@ tar -xf splunk-8.0.3-a6754d8441bf-Linux-x86_64.tgz
 
 chown -R splunk:splunk splunk
 
-# Skip Splunk Tour and Change Password Dialog
+# Skip Splunk Tour and Change Password dialogue
 touch /opt/splunk/etc/.ui_login
 
 # Add listener for splunk TCP 9997 (for UF and other HWF)
