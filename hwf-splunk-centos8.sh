@@ -94,7 +94,7 @@ systemctl start disable-thp
 # Disable THP at startup
 systemctl enable disable-thp
 
-# THP now diabled
+# THP now disabled
 cat /sys/kernel/mm/transparent_hugepage/enabled
 cat /sys/kernel/mm/transparent_hugepage/defrag
 
@@ -129,11 +129,6 @@ find /usr/share/nano -name '*.nanorc' -printf "include %p\n" > ~/.nanorc
 # get the repo
 dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm -y
 dnf config-manager --set-enabled PowerTools
-
-#!!! Deleteme maybe
-# add repo to dnf
-#cd /etc/dnf.repos.d/
-#wget https://copr.fedorainfracloud.org/coprs/czanik/syslog-ng319/repo/epel-7/czanik-syslog-ng319-epel-8.repo
 
 dnf install syslog-ng multitail htop iptraf-ng -y
 
@@ -174,7 +169,7 @@ echo "
 
 # Filters
     filter f_cisco_asa { match(\"%ASA\" value(\"PROGRAM\")) or match(\"%ASA\" value(\"MESSAGE\")); };
-    filter f_fortinet { match(\"devid=FG\" value(\"PROGRAM\")) or host(\"masu\") or match(\"devid=FG\" value(\"MESSAGE\")); };
+    filter f_fortinet { match(\"devid=FG\" value(\"PROGRAM\")) or host(\"msu\") or match(\"devid=FG\" value(\"MESSAGE\")); };
     filter f_juniper { match(\"junos\" value(\"PROGRAM\")) or host(\"Internet\") or host(\"150.1.156.30\") or host(\"150.1.128.10\") or match(\"junos\" value(\"MESSAGE\")) or match(\"RT_FLOW:\" value(\"MESSAGE\")); };
     filter f_palo_alto { match(\"009401000570\" value(\"PROGRAM\")) or match(\"009401000570\" value(\"MESSAGE\")); };
     filter f_all { not (
@@ -212,7 +207,7 @@ tar -xf splunk-8.0.3-a6754d8441bf-Linux-x86_64.tgz
 
 chown -R splunk:wheel splunk
 
-# Skip Splunk Tour and Change Password Dialog
+# Skip Splunk Tour and Change Password dialogue
 touch /opt/splunk/etc/.ui_login
 
 # Add listener for splunk TCP 9997 (for UF and other HWF)
