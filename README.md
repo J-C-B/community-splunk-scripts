@@ -1,4 +1,4 @@
-# Build scripts to create a basic splunk node or heavy forwarder
+# Build scripts to create basic splunk nodes or heavy forwarder with syslog-ng
 
 ## Purpose
 
@@ -6,11 +6,11 @@ This repo is for community scripts to be shared from.
 
 ****These scripts are community focused and not supported or endorsed by Splunk, use at your own risk****
 
-Scripts starting "enterprise" are designed to create a vanilla splunk enterprise node, which can be configured into an indexer, searchead or any other node as required after script run
+Scripts starting "enterprise" are designed to create a vanilla splunk enterprise node, which can be configured into an indexer, search head or any other node as required after script run
 
-Scripts starting "hwf" are designed to create a base HWF with Syslog-NG configured and ready to receive events, with Splunk set to monitor those folders - check the video link below for a run through
+Scripts starting "hwf" are designed to create a base HWF with Syslog-NG configured and ready to receive events, with Splunk set to monitor those folders - check the video link below for an 8 minute run through
 
-## Video and installation guide for centos HWF scripts
+## Video and installation guide for centos syslog-ng HWF scripts
 
 https://www.youtube.com/channel/UCnJs921W67iy2LdBzr8kC2A
 
