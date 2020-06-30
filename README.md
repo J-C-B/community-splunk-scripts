@@ -22,3 +22,7 @@ https://www.youtube.com/channel/UCnJs921W67iy2LdBzr8kC2A
 * These scripts are designed to be run on a vanilla fresh install of centos, they take no care for any existing configuration
 * The addons are installed from a static `.tar` so may be out of date, update if required after script run
 * If you are creating a golden image, run this command before locking to prevent duplicate guids etc `/opt/splunk/bin/splunk clone-prep-clear-config`
+
+## Project home page
+
+https://gitlab.com/J-C-B/community-splunk-scripts
