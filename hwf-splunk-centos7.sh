@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 24/06/2020 John Barnett
+# 30/06/2020 John Barnett
 # Script created on / for CentOS 7
 # Community script to create a Splunk syslog-ng heavy forwarder from scratch, use at your own risk
 # Project home = https://gitlab.com/J-C-B/community-splunk-scripts
