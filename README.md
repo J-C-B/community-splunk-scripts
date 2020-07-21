@@ -1,4 +1,4 @@
-# Build scripts to create basic splunk nodes or heavy forwarder with syslog-ng
+# Build scripts to create basic splunk nodes or heavy forwarders with syslog-ng
 
 ## Purpose
 
@@ -10,9 +10,14 @@ Scripts starting "enterprise" are designed to create a vanilla splunk enterprise
 
 Scripts starting "hwf" are designed to create a base HWF with Syslog-NG configured and ready to receive events, with Splunk set to monitor those folders - check the video link below for an 8 minute run through
 
-## Video and installation guide for centos syslog-ng HWF scripts
+## Video of installation guide and deep dive for *centos syslog-ng HWF* scripts
 
 https://www.youtube.com/channel/UCnJs921W67iy2LdBzr8kC2A
+
+## Video installation guide for centos *Splunk connect for syslog (SC4S)*
+
+https://www.youtube.com/channel/UCnJs921W67iy2LdBzr8kC2A
+
 
 ## Notes
 
@@ -20,7 +25,6 @@ https://www.youtube.com/channel/UCnJs921W67iy2LdBzr8kC2A
 * Any HWF addons are installed from a static `.tar` so may be out of date, update if required after script run
 * For splunk cloud customers, contact Splunk support for a free heavy forwarder licence
 * These scripts are designed to be run on a vanilla fresh install of centos, they take no care for any existing configuration
-* The addons are installed from a static `.tar` so may be out of date, update if required after script run
 * If you are creating a golden image, run this command before locking to prevent duplicate guids etc `/opt/splunk/bin/splunk clone-prep-clear-config`
 
 ## Project home page
