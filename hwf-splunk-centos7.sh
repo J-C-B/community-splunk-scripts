@@ -21,6 +21,9 @@
 ## multitail -s 2 /var/log/splunklogs/*/*/*.log  /opt/splunk/var/log/splunk/splunkd.log     ## monitor all the files in the splunk dir
 ## syslog-ng-ctl stats                                                                      ## See the stats for each filter
 
+# add crontab to delete older log files automatically (optional)
+#crontab -l | { cat; echo "0 5 * * * /bin/find /var/log/splunklogs/ -type f -name \*.log -mtime +1 -exec rm {} \;"; } | crontab -
+
 
 # Create users
 adduser syslog-ng
