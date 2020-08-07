@@ -103,7 +103,7 @@ sudo apt erase rsyslog -y
 sudo apt update -y
 
 # Install tools
-sudo apt install nano wget tcpdump syslog-ng multitail htop iptraf-ng -y
+sudo apt install nano wget tcpdump syslog-ng syslog-ng-core multitail htop iptraf-ng -y
 
 find /usr/share/nano -name '*.nanorc' -printf "include %p\n" > ~/.nanorc
 
@@ -324,7 +324,7 @@ logger -n 127.0.0.1 -P 514 " **** juniper test event **** 1 2019-04-08T20:17:19.
 logger -n 127.0.0.1 -P 514 " **** fortinet test event **** date=2019-04-08,time=20:33:26,devname=3kUnitB,devid=FG3K2C31,logid=0315012544,type=utm,subtype=webfilter,eventtype=urlfilter,level=warning,vd="CCorp",urlfilteridx=3,urlfilterlist="Microsoft-Wildcard",policyid=4303,sessionid=3097985850,user="",srcip=10.250.35.24,srcport=54653,srcintf="V1215-EPZP",dstip=54.214.227.245,dstport=443,dstintf="root",proto=6,service=HTTPS,hostname="aztec.brightmail.com",profile="Microsoft-Wildcard",action=blocked,reqtype=direct,url="/",sentbyte=346,rcvdbyte=3523,direction=outgoing,msg="URL was blocked because it is in the URL filter list",crscore=30,crlevel=high"
 
 
-multitail -s 2 /var/log/splunklogs/*/*/*.log  /opt/splunk/var/log/splunk/splunkd.log
+sudo multitail -s 2 /var/log/splunklogs/*/*/*.log  /opt/splunk/var/log/splunk/splunkd.log
 
 
 
