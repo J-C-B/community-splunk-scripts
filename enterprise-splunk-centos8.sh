@@ -116,8 +116,8 @@ wget -O splunk-8.0.6-152fb4b2bb96-Linux-x86_64.tgz 'https://www.splunk.com/bin/s
 
 #tar -xf splunk-7.2.5.1-962d9a8e1586-Linux-x86_64.tgz
 #tar -xf splunk-7.3.0-657388c7a488-Linux-x86_64.tgz
-tar -xf splunk-8.0.3-a6754d8441bf-Linux-x86_64.tgz
-
+#tar -xf splunk-8.0.3-a6754d8441bf-Linux-x86_64.tgz
+tar -xf splunk-8.0.6-152fb4b2bb96-Linux-x86_64.tgz
 chown -R splunk:splunk splunk
 
 # Skip Splunk Tour and Change Password Dialog
