@@ -31,8 +31,8 @@ dnf install -y conntrack podman
 echo "
 ## Edited with JB Splunk Install script by magic
 
-net.core.rmem_default = 1703936
-net.core.rmem_max = 1703936
+net.core.rmem_default = 17039360
+net.core.rmem_max = 17039360
 " >> /etc/sysctl.conf
 
 sysctl -p
