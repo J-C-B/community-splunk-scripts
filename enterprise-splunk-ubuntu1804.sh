@@ -53,10 +53,10 @@ echo "
 sudo systemctl daemon-reload
 
 # Start the disable-thp daemon
-systemctl start disable-thp
+sudo systemctl start disable-thp
 
 # Disable THP at startup
-systemctl enable disable-thp
+sudo systemctl enable disable-thp
 
 # THP now diabled
 cat /sys/kernel/mm/transparent_hugepage/enabled
