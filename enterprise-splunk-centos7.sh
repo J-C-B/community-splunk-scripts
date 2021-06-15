@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 15/06/21 John Barnett
+# 30/06/20 John Barnett
 # Script created on / for CentOS 7
 # Community script to create a Splunk Enterprise node from scratch, use at your own risk
 # 

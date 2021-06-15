@@ -6,18 +6,9 @@ This repo is for community scripts to be shared from.
 
 ****These scripts are community focused and not supported or endorsed by Splunk, use at your own risk****
 
-Scripts starting "enterprise" are designed to create a vanilla splunk enterprise node, which can be configured into an indexer, search head or any other node as required after script run
-
-Scripts starting "hwf" are designed to create a base HWF with Syslog-NG configured and ready to receive events, with Splunk set to monitor those folders - check the video link below for an 8 minute run through
-
-## Video of installation guide and deep dive for *centos syslog-ng HWF* scripts
+## Usage and instalation guide
 
 https://www.youtube.com/channel/UCnJs921W67iy2LdBzr8kC2A
-
-## Video installation guide for centos *Splunk connect for syslog (SC4S)*
-
-https://www.youtube.com/channel/UCnJs921W67iy2LdBzr8kC2A
-
 
 ## Notes
 
