@@ -1,0 +1,26 @@
+# Ignore everything
+#*
+
+# But not these files...
+#!.gitignore
+#!README.md
+#!/bin
+#!/default
+#!/static
+#!/TA*
+#!*.sh
+#!*.conf
+# etc...
+
+# ...even if they are in subdirectories
+#!*/
+
+# now exclude local and tem files etc in sub directories
+#*/local
+#*/metadata
+
+#Mac OS X
+.DS_Store
+
+# Python
+*.py[co]
