@@ -64,13 +64,13 @@ Environment=\"SC4S_IMAGE=ghcr.io/splunk/splunk-connect-for-syslog/container:1\"
 Environment=\"SC4S_PERSIST_MOUNT=splunk-sc4s-var:/var/lib/syslog-ng\"
 
 # Optional mount point for local overrides and configurations; see notes in docs
-Environment=\"SC4S_LOCAL_MOUNT=/opt/splunk/sc4s/local:/etc/syslog-ng/conf.d/local:z\"
+Environment=\"SC4S_LOCAL_MOUNT=/opt/sc4s/local:/etc/syslog-ng/conf.d/local:z\"
 
 # Optional mount point for local disk archive (EWMM output) files
-Environment=\"SC4S_ARCHIVE_MOUNT=/opt/splunk/sc4s/archive:/var/lib/syslog-ng/archive:z\"
+Environment=\"SC4S_ARCHIVE_MOUNT=/opt/sc4s/archive:/var/lib/syslog-ng/archive:z\"
 
 # Uncomment the following line if custom TLS certs are provided
-Environment=\"SC4S_TLS_MOUNT=/opt/splunk/sc4s/tls:/etc/syslog-ng/tls:z\"
+Environment=\"SC4S_TLS_MOUNT=/opt/sc4s/tls:/etc/syslog-ng/tls:z\"
 
 TimeoutStartSec=0
 
@@ -121,7 +121,6 @@ sudo systemctl enable --now sc4s
 # Send a test event
 echo “Hello MYSC4S” > /dev/udp/127.0.0.1/514
 sleep 10
-sudo podman logs sc4sbuilder
 sudo podman logs SC4S
 sudo podman ps
 # Sleep to allow TLS to come up
