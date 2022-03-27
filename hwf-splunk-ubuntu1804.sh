@@ -186,7 +186,7 @@ wget -O splunk-8.2.5-77015bc7a462-Linux-x86_64.tgz "https://download.splunk.com/
 #tar -xf splunk-8.0.6-152fb4b2bb96-Linux-x86_64.tgz
 #tar -xf splunk-8.2.0-e053ef3c985f-Linux-x86_64.tgz
 #tar -xf splunk-8.2.3-cd0848707637-Linux-x86_64.tgz
-tar splunk-8.2.5-77015bc7a462-Linux-x86_64.tgz
+tar -xf splunk-8.2.5-77015bc7a462-Linux-x86_64.tgz
 
 
 chown -R splunk:splunk splunk
