@@ -36,6 +36,8 @@ firewall-cmd --list-all
 firewall-cmd --zone=public --add-port=514/tcp --permanent # syslog TCP
 firewall-cmd --zone=public --add-port=514/udp --permanent # syslog UDP
 firewall-cmd --zone=public --add-port=6514/tcp --permanent # syslog TLS
+firewall-cmd --zone=public --add-port=5425/tcp --permanent # syslog
+firewall-cmd --zone=public --add-port=601/tcp --permanent # syslog
 firewall-cmd --reload
 #Check applied
 firewall-cmd --list-all
