@@ -187,7 +187,7 @@ echo "
 curl -k https://localhost:8000
 
 
-multitail -s 2 /var/log/splunklogs/*/*/*.log  /opt/splunk/var/log/splunk/splunkd.log
+multitail -s 2 /opt/splunk/var/log/splunk/first_install.log  /opt/splunk/var/log/splunk/splunkd.log
 
 ## If you are creating a golden image, run this command before locking to prevent duplicate guids etc
 # /opt/splunk/bin/splunk clone-prep-clear-config
