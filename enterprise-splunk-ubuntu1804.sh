@@ -98,8 +98,8 @@ mkdir splunk
 #wget -O splunk-8.2.0-e053ef3c985f-Linux-x86_64.tgz 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=8.2.0&product=splunk&filename=splunk-8.2.0-e053ef3c985f-Linux-x86_64.tgz&wget=true'
 #wget -O splunk-8.2.3-cd0848707637-Linux-x86_64.tgz 'https://download.splunk.com/products/splunk/releases/8.2.3/linux/splunk-8.2.3-cd0848707637-Linux-x86_64.tgz'
 #wget -O splunk-8.2.5-77015bc7a462-Linux-x86_64.tgz "https://download.splunk.com/products/splunk/releases/8.2.5/linux/splunk-8.2.5-77015bc7a462-Linux-x86_64.tgz"
-wget -O splunk-9.0.1-82c987350fde-Linux-x86_64.tgz "https://download.splunk.com/products/splunk/releases/9.0.1/linux/splunk-9.0.1-82c987350fde-Linux-x86_64.tgz"
-
+#wget -O splunk-9.0.1-82c987350fde-Linux-x86_64.tgz "https://download.splunk.com/products/splunk/releases/9.0.1/linux/splunk-9.0.1-82c987350fde-Linux-x86_64.tgz"
+wget -O splunk-9.0.3-dd0128b1f8cd-Linux-x86_64.tgz "https://download.splunk.com/products/splunk/releases/9.0.3/linux/splunk-9.0.3-dd0128b1f8cd-Linux-x86_64.tgz"
 
 #tar -xf splunk-7.2.5.1-962d9a8e1586-Linux-x86_64.tgz
 #tar -xf splunk-7.3.0-657388c7a488-Linux-x86_64.tgz
@@ -108,7 +108,8 @@ wget -O splunk-9.0.1-82c987350fde-Linux-x86_64.tgz "https://download.splunk.com/
 #tar -xf splunk-8.2.0-e053ef3c985f-Linux-x86_64.tgz
 #tar -xf splunk-8.2.3-cd0848707637-Linux-x86_64.tgz
 #tar -xf splunk-8.2.5-77015bc7a462-Linux-x86_64.tgz
-tar -xf splunk-9.0.1-82c987350fde-Linux-x86_64.tgz
+#tar -xf splunk-9.0.1-82c987350fde-Linux-x86_64.tgz
+tar -xf splunk-9.0.3-dd0128b1f8cd-Linux-x86_64.tgz
 
 
 chown -R splunk:splunk splunk
