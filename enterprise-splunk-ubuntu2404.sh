@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 09/03/26 John Barnett
-# Script created on / for ubuntu 18.04
+# Script created on / for ubuntu 24.04
 # Community script to create a Splunk Enterprise node from scratch, use at your own risk
 # 
 
