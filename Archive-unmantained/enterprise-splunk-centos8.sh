@@ -1,13 +1,15 @@
 #!/bin/bash
 
-# 30/06/20 John Barnett
-# Script created on / for CentOS 7
+# 15/06/21 John Barnett
+# Script created on / for CentOS 8
 # Community script to create a Splunk Enterprise node from scratch, use at your own risk
 # 
 
 ################################################################################################################
-## Set password in the script or change it after - default password used by the script is Bz9!SV8VdRiYiman  ####
+## Set SPLUNK_SEED_PASSWORD in the script or change it after installation                                  ####
 ################################################################################################################
+
+SPLUNK_SEED_PASSWORD='Bz9!SV8VdRiYiman'
 
 ################################################################################################################
 ## It is designed to run once and assumes a clean system and takes little care as to any existing config    ####
@@ -99,13 +101,10 @@ yum install nano wget tcpdump -y
 find /usr/share/nano -name '*.nanorc' -printf "include %p\n" > ~/.nanorc
 
 # get the repo
-wget https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-rpm -Uvh epel-release-latest-7.noarch.rpm
+dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm -y
+dnf config-manager --set-enabled PowerTools
 
-yum install multitail htop iptraf-ng -y
-
-
-
+dnf install multitail htop iptraf-ng -y
 
 
 # add Splunk
@@ -165,16 +164,16 @@ echo "Starting Splunk - fire it up!! and enabling Splunk to start at boot time w
 
 #echo "Enter auth to enable deployment server"
 
-/opt/splunk/bin/splunk enable boot-start -user splunk --accept-license --seed-passwd Bz9!SV8VdRiYiman --answer-yes --auto-ports --no-prompt
+/opt/splunk/bin/splunk enable boot-start -user splunk --accept-license --seed-passwd "$SPLUNK_SEED_PASSWORD" --answer-yes --auto-ports --no-prompt
 
 chown -R splunk:splunk /opt/splunk
 
 # Add extra users if wanted example
 
-#/opt/splunk/bin/splunk add user user1 -password V6jwLHLqiZdpwXsPQUHc -role admin -auth admin:Bz9!SV8VdRiYiman
-#/opt/splunk/bin/splunk add user user2 -password V6jwLHLqiZdpwXsPQUHc -role admin -auth admin:Bz9!SV8VdRiYiman
-#/opt/splunk/bin/splunk add user user3 -password V6jwLHLqiZdpwXsPQUHc -role admin -auth admin:Bz9!SV8VdRiYiman
-#/opt/splunk/bin/splunk add user user4 -password V6jwLHLqiZdpwXsPQUHc -role admin -auth admin:Bz9!SV8VdRiYiman
+#/opt/splunk/bin/splunk add user user1 -password V6jwLHLqiZdpwXsPQUHc -role admin -auth admin:$SPLUNK_SEED_PASSWORD
+#/opt/splunk/bin/splunk add user user2 -password V6jwLHLqiZdpwXsPQUHc -role admin -auth admin:$SPLUNK_SEED_PASSWORD
+#/opt/splunk/bin/splunk add user user3 -password V6jwLHLqiZdpwXsPQUHc -role admin -auth admin:$SPLUNK_SEED_PASSWORD
+#/opt/splunk/bin/splunk add user user4 -password V6jwLHLqiZdpwXsPQUHc -role admin -auth admin:$SPLUNK_SEED_PASSWORD
 
 /opt/splunk/bin/splunk start
 

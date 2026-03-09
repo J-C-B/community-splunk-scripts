@@ -7,8 +7,10 @@
 # wget https://gitlab.com/J-C-B/community-splunk-build-scripts/-/raw/master/hwf-splunk-centos7.sh
 
 ################################################################################################################
-## Set password in the script or change it after - default password used by the script is Bz9!SV8VdRiYiman  ####
+## Set SPLUNK_SEED_PASSWORD in the script or change it after installation                                  ####
 ################################################################################################################
+
+SPLUNK_SEED_PASSWORD='Bz9!SV8VdRiYiman'
 
 ################################################################################################################
 ## It is designed to run once and assumes a clean system and takes little care as to any existing config    ####
@@ -345,7 +347,7 @@ echo "Starting Splunk - fire it up!! and enabling Splunk to start at boot time w
 
 #echo "Enter auth to enable deployment server"
 
-/opt/splunk/bin/splunk enable boot-start -user splunk --accept-license --seed-passwd Bz9!SV8VdRiYiman --answer-yes --auto-ports --no-prompt
+/opt/splunk/bin/splunk enable boot-start -user splunk --accept-license --seed-passwd "$SPLUNK_SEED_PASSWORD" --answer-yes --auto-ports --no-prompt
 
 #!!! configure this if the HWF is not the deplyment server too
 #opt/splunk/bin/splunk set deploy-poll depserver:8089

@@ -1,14 +1,16 @@
 #!/bin/bash
 
-# 09/03/26 John Barnett
-# Script created on / for Ubuntu 18.04 ONLY
+# 11/05/20 John Barnett
+# Script created on / for CentOS 8 ONLY
 # Community script to create a Splunk syslog-ng heavy forwarder from scratch, use at your own risk
-# Project home = https://gitlab.com/J-C-B/community-splunk-scripts
-# wget https://gitlab.com/J-C-B/community-splunk-scripts/-/raw/master/hwf-splunk-ubuntu1804.sh
+# 
+# wget https://gitlab.com/J-C-B/community-splunk-build-scripts/-/raw/master/hwf-splunk-centos8.sh
 
 ################################################################################################################
-## Set password in the script or change it after - default password used by the script is Bz9!SV8VdRiYiman  ####
+## Set SPLUNK_SEED_PASSWORD in the script or change it after installation                                  ####
 ################################################################################################################
+
+SPLUNK_SEED_PASSWORD='Bz9!SV8VdRiYiman'
 
 ################################################################################################################
 ## It is designed to run once and assumes a clean system and takes little care as to any existing config    ####
@@ -41,9 +43,31 @@ mkdir /var/log/splunklogs/cisco/asa/
 mkdir /var/log/splunklogs/paloalto/
 mkdir /var/log/splunklogs/fortinet/
 
-sudo chown -R syslog-ng:splunk /var/log/splunklogs
+chown -R syslog-ng:splunk /var/log/splunklogs
 
 
+
+#Show original state
+firewall-cmd --list-all
+#Splunk ports
+firewall-cmd --zone=public --add-port=8000/tcp --permanent # Web UI Port
+firewall-cmd --zone=public --add-port=8080/tcp --permanent # HEC port
+firewall-cmd --zone=public --add-port=8088/tcp --permanent # HEC port
+firewall-cmd --zone=public --add-port=8089/tcp --permanent # Managment Port
+firewall-cmd --zone=public --add-port=9997/tcp --permanent # Data flow
+#Syslog listeners
+firewall-cmd --zone=public --add-port=514/tcp --permanent
+#firewall-cmd --zone=public --add-port=1514/tcp --permanent
+#firewall-cmd --zone=public --add-port=1515/tcp --permanent
+#firewall-cmd --zone=public --add-port=1516/tcp --permanent
+#firewall-cmd --zone=public --add-port=1517/tcp --permanent
+#firewall-cmd --zone=public --add-port=1518/tcp --permanent
+#firewall-cmd --zone=public --add-port=1514/udp --permanent
+firewall-cmd --zone=public --add-port=514/udp --permanent
+#reload the setting to take effect
+firewall-cmd --reload
+#Check applied
+firewall-cmd --list-all
 
 # Deal with THP
 # https://docs.splunk.com/Documentation/Splunk/7.2.5/ReleaseNotes/SplunkandTHP
@@ -57,11 +81,11 @@ echo "
 ## Created with JB Splunk Install script by magic
  [Unit]
  Description=Disable Transparent Huge Pages (THP)
-
+ 
  [Service]
  Type=simple
  ExecStart=/bin/sh -c \"echo \'never\' > /sys/kernel/mm/transparent_hugepage/enabled && echo \'never\' > /sys/kernel/mm/transparent_hugepage/defrag\"
-
+ 
  [Install]
  WantedBy=multi-user.target
 " >  /etc/systemd/system/disable-thp.service
@@ -69,10 +93,10 @@ echo "
 sudo systemctl daemon-reload
 
 # Start the disable-thp daemon
-sudo systemctl start disable-thp
+systemctl start disable-thp
 
 # Disable THP at startup
-sudo systemctl enable disable-thp
+systemctl enable disable-thp
 
 
 # THP now disabled
@@ -81,7 +105,7 @@ cat /sys/kernel/mm/transparent_hugepage/defrag
 
 # Set file limits
 
-sudo mkdir /etc/systemd/user.conf.d/
+mkdir /etc/systemd/user.conf.d/
 
 echo "
 ## Created with JB Splunk Install script by magic
@@ -97,15 +121,22 @@ DefaultLimitNPROC=16000
 
 
 # remove default sysloger
-sudo apt erase rsyslog -y
+dnf erase rsyslog -y
 
 #Update package lists
-sudo apt update -y
+dnf update -y
 
 # Install tools
-sudo apt install nano wget tcpdump syslog-ng syslog-ng-core multitail htop iptraf-ng -y
+dnf install nano  wget tcpdump -y
 
 find /usr/share/nano -name '*.nanorc' -printf "include %p\n" > ~/.nanorc
+
+# get the repo
+dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm -y
+dnf config-manager --set-enabled PowerTools
+
+dnf install syslog-ng multitail htop iptraf-ng -y
+
 
 # Add syslog listener
 echo "
@@ -164,12 +195,12 @@ echo "
 
 
 #enable syslog-ng
-sudo systemctl enable syslog-ng
-sudo systemctl start syslog-ng
+systemctl enable syslog-ng
+systemctl start syslog-ng
 
 # add Splunk
-sudo cd /opt
-sudo mkdir splunk
+cd /opt
+mkdir splunk
 
 #wget -O splunk-7.2.5.1-962d9a8e1586-Linux-x86_64.tgz 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=7.2.5.1&product=splunk&filename=splunk-7.2.5.1-962d9a8e1586-Linux-x86_64.tgz&wget=true'
 #wget -O splunk-7.3.0-657388c7a488-Linux-x86_64.tgz 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=7.3.0&product=splunk&filename=splunk-7.3.0-657388c7a488-Linux-x86_64.tgz&wget=true'
@@ -178,7 +209,7 @@ sudo mkdir splunk
 #wget -O splunk-8.2.0-e053ef3c985f-Linux-x86_64.tgz 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=8.2.0&product=splunk&filename=splunk-8.2.0-e053ef3c985f-Linux-x86_64.tgz&wget=true'
 #wget -O splunk-8.2.3-cd0848707637-Linux-x86_64.tgz 'https://download.splunk.com/products/splunk/releases/8.2.3/linux/splunk-8.2.3-cd0848707637-Linux-x86_64.tgz'
 wget -O splunk-8.2.5-77015bc7a462-Linux-x86_64.tgz "https://download.splunk.com/products/splunk/releases/8.2.5/linux/splunk-8.2.5-77015bc7a462-Linux-x86_64.tgz"
-wget -O splunk-10.2.1-c892b66d163d-linux-amd64.tgz "https://download.splunk.com/products/splunk/releases/10.2.1/linux/splunk-10.2.1-c892b66d163d-linux-amd64.tgz"
+
 
 
 #tar -xf splunk-7.2.5.1-962d9a8e1586-Linux-x86_64.tgz
@@ -187,8 +218,8 @@ wget -O splunk-10.2.1-c892b66d163d-linux-amd64.tgz "https://download.splunk.com/
 #tar -xf splunk-8.0.6-152fb4b2bb96-Linux-x86_64.tgz
 #tar -xf splunk-8.2.0-e053ef3c985f-Linux-x86_64.tgz
 #tar -xf splunk-8.2.3-cd0848707637-Linux-x86_64.tgz
-#tar -xf splunk-8.2.5-77015bc7a462-Linux-x86_64.tgz
-tar -xf splunk-10.2.1-c892b66d163d-linux-amd64.tgz
+tar -xf splunk-8.2.5-77015bc7a462-Linux-x86_64.tgz
+
 
 chown -R splunk:splunk splunk
 
@@ -270,7 +301,7 @@ host_segment = 6
 " > /opt/splunk/etc/apps/syslogng_monitors/local/inputs.conf
 
 ########################## Adding the TAs
-sudo cd /opt
+cd /opt
 
 wget https://johnb-bucket-pub.s3-ap-southeast-2.amazonaws.com/dc/dc_apps.tar
 
@@ -302,7 +333,7 @@ for f in *.tar; do tar -xvf "$f" -C /opt/splunk/etc/deployment-apps/; done
 
 # Enable SSL Login for Splunk
 echo "Enable WebUI TLS"
-
+ 
 echo "
 [settings]
 httpport = 8000
@@ -314,7 +345,7 @@ chown -R splunk:splunk /opt/splunk
 
 echo "Starting Splunk - fire it up!! and enabling Splunk to start at boot time with user=splunk "
 
-/opt/splunk/bin/splunk enable boot-start -user splunk --accept-license --seed-passwd Bz9!SV8VdRiYiman --answer-yes --auto-ports --no-prompt
+/opt/splunk/bin/splunk enable boot-start -user splunk --accept-license --seed-passwd "$SPLUNK_SEED_PASSWORD" --answer-yes --auto-ports --no-prompt
 
 /opt/splunk/bin/splunk start
 
@@ -335,10 +366,9 @@ logger -n 127.0.0.1 -P 514 " **** juniper test event **** 1 2019-04-08T20:17:19.
 logger -n 127.0.0.1 -P 514 " **** fortinet test event **** date=2019-04-08,time=20:33:26,devname=3kUnitB,devid=FG3K2C31,logid=0315012544,type=utm,subtype=webfilter,eventtype=urlfilter,level=warning,vd="CCorp",urlfilteridx=3,urlfilterlist="Microsoft-Wildcard",policyid=4303,sessionid=3097985850,user="",srcip=10.250.35.24,srcport=54653,srcintf="V1215-EPZP",dstip=54.214.227.245,dstport=443,dstintf="root",proto=6,service=HTTPS,hostname="aztec.brightmail.com",profile="Microsoft-Wildcard",action=blocked,reqtype=direct,url="/",sentbyte=346,rcvdbyte=3523,direction=outgoing,msg="URL was blocked because it is in the URL filter list",crscore=30,crlevel=high"
 
 
-sudo multitail -s 2 /var/log/splunklogs/*/*/*.log  /opt/splunk/var/log/splunk/splunkd.log
+multitail -s 2 /var/log/splunklogs/*/*/*.log  /opt/splunk/var/log/splunk/splunkd.log
 
 
 
 ## If you are creating a golden image, run this command before locking to prevent duplicate guids etc
 # /opt/splunk/bin/splunk clone-prep-clear-config
-

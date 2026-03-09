@@ -1,13 +1,15 @@
 #!/bin/bash
 
-# 15/06/21 John Barnett
-# Script created on / for CentOS 8
+# 09/03/26 John Barnett
+# Script created on / for ubuntu 18.04
 # Community script to create a Splunk Enterprise node from scratch, use at your own risk
 # 
 
 ################################################################################################################
-## Set password in the script or change it after - default password used by the script is Bz9!SV8VdRiYiman  ####
+## Set SPLUNK_SEED_PASSWORD in the script or change it after installation                                  ####
 ################################################################################################################
+
+SPLUNK_SEED_PASSWORD='Bz9!SV8VdRiYiman'
 
 ################################################################################################################
 ## It is designed to run once and assumes a clean system and takes little care as to any existing config    ####
@@ -28,17 +30,6 @@ adduser splunk
 groupadd splunk
 usermod -aG splunk splunk
 
-#Show original state
-firewall-cmd --list-all
-#Splunk ports
-firewall-cmd --zone=public --add-port=8000/tcp --permanent # Web UI Port
-firewall-cmd --zone=public --add-port=8080/tcp --permanent # HEC port
-firewall-cmd --zone=public --add-port=8088/tcp --permanent # HEC port
-firewall-cmd --zone=public --add-port=8089/tcp --permanent # Managment Port
-firewall-cmd --zone=public --add-port=9997/tcp --permanent # Data flow
-firewall-cmd --reload
-#Check applied
-firewall-cmd --list-all
 
 # Deal with THP
 # https://docs.splunk.com/Documentation/Splunk/7.2.5/ReleaseNotes/SplunkandTHP
@@ -64,10 +55,10 @@ echo "
 sudo systemctl daemon-reload
 
 # Start the disable-thp daemon
-systemctl start disable-thp
+sudo systemctl start disable-thp
 
 # Disable THP at startup
-systemctl enable disable-thp
+sudo systemctl enable disable-thp
 
 # THP now diabled
 cat /sys/kernel/mm/transparent_hugepage/enabled
@@ -91,19 +82,12 @@ DefaultLimitNPROC=16000
 
 
 #Update package lists
-yum update -y
+sudo apt update -y
 
 # Install tools
-yum install nano wget tcpdump -y
+sudo apt install nano wget tcpdump multitail htop iptraf-ng -y
 
 find /usr/share/nano -name '*.nanorc' -printf "include %p\n" > ~/.nanorc
-
-# get the repo
-dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm -y
-dnf config-manager --set-enabled PowerTools
-
-dnf install multitail htop iptraf-ng -y
-
 
 # add Splunk
 cd /opt
@@ -116,7 +100,9 @@ mkdir splunk
 #wget -O splunk-8.2.0-e053ef3c985f-Linux-x86_64.tgz 'https://www.splunk.com/bin/splunk/DownloadActivityServlet?architecture=x86_64&platform=linux&version=8.2.0&product=splunk&filename=splunk-8.2.0-e053ef3c985f-Linux-x86_64.tgz&wget=true'
 #wget -O splunk-8.2.3-cd0848707637-Linux-x86_64.tgz 'https://download.splunk.com/products/splunk/releases/8.2.3/linux/splunk-8.2.3-cd0848707637-Linux-x86_64.tgz'
 #wget -O splunk-8.2.5-77015bc7a462-Linux-x86_64.tgz "https://download.splunk.com/products/splunk/releases/8.2.5/linux/splunk-8.2.5-77015bc7a462-Linux-x86_64.tgz"
-wget -O splunk-9.0.1-82c987350fde-Linux-x86_64.tgz "https://download.splunk.com/products/splunk/releases/9.0.1/linux/splunk-9.0.1-82c987350fde-Linux-x86_64.tgz"
+#wget -O splunk-9.0.1-82c987350fde-Linux-x86_64.tgz "https://download.splunk.com/products/splunk/releases/9.0.1/linux/splunk-9.0.1-82c987350fde-Linux-x86_64.tgz"
+#wget -O splunk-8.2.5-77015bc7a462-Linux-x86_64.tgz "https://download.splunk.com/products/splunk/releases/8.2.5/linux/splunk-8.2.5-77015bc7a462-Linux-x86_64.tgz"
+wget -O splunk-10.2.1-c892b66d163d-linux-amd64.tgz "https://download.splunk.com/products/splunk/releases/10.2.1/linux/splunk-10.2.1-c892b66d163d-linux-amd64.tgz"
 
 
 #tar -xf splunk-7.2.5.1-962d9a8e1586-Linux-x86_64.tgz
@@ -126,7 +112,8 @@ wget -O splunk-9.0.1-82c987350fde-Linux-x86_64.tgz "https://download.splunk.com/
 #tar -xf splunk-8.2.0-e053ef3c985f-Linux-x86_64.tgz
 #tar -xf splunk-8.2.3-cd0848707637-Linux-x86_64.tgz
 #tar -xf splunk-8.2.5-77015bc7a462-Linux-x86_64.tgz
-tar -xf splunk-9.0.1-82c987350fde-Linux-x86_64.tgz
+tar -xf splunk-10.2.1-c892b66d163d-linux-amd64.tgz
+
 
 chown -R splunk:splunk splunk
 
@@ -162,16 +149,16 @@ echo "Starting Splunk - fire it up!! and enabling Splunk to start at boot time w
 
 #echo "Enter auth to enable deployment server"
 
-/opt/splunk/bin/splunk enable boot-start -user splunk --accept-license --seed-passwd Bz9!SV8VdRiYiman --answer-yes --auto-ports --no-prompt
+/opt/splunk/bin/splunk enable boot-start -user splunk --accept-license --seed-passwd "$SPLUNK_SEED_PASSWORD" --answer-yes --auto-ports --no-prompt
 
 chown -R splunk:splunk /opt/splunk
 
 # Add extra users if wanted example
 
-#/opt/splunk/bin/splunk add user user1 -password V6jwLHLqiZdpwXsPQUHc -role admin -auth admin:Bz9!SV8VdRiYiman
-#/opt/splunk/bin/splunk add user user2 -password V6jwLHLqiZdpwXsPQUHc -role admin -auth admin:Bz9!SV8VdRiYiman
-#/opt/splunk/bin/splunk add user user3 -password V6jwLHLqiZdpwXsPQUHc -role admin -auth admin:Bz9!SV8VdRiYiman
-#/opt/splunk/bin/splunk add user user4 -password V6jwLHLqiZdpwXsPQUHc -role admin -auth admin:Bz9!SV8VdRiYiman
+#/opt/splunk/bin/splunk add user user1 -password V6jwLHLqiZdpwXsPQUHc -role admin -auth admin:$SPLUNK_SEED_PASSWORD
+#/opt/splunk/bin/splunk add user user2 -password V6jwLHLqiZdpwXsPQUHc -role admin -auth admin:$SPLUNK_SEED_PASSWORD
+#/opt/splunk/bin/splunk add user user3 -password V6jwLHLqiZdpwXsPQUHc -role admin -auth admin:$SPLUNK_SEED_PASSWORD
+#/opt/splunk/bin/splunk add user user4 -password V6jwLHLqiZdpwXsPQUHc -role admin -auth admin:$SPLUNK_SEED_PASSWORD
 
 /opt/splunk/bin/splunk start
 
@@ -191,5 +178,7 @@ multitail -s 2 /opt/splunk/var/log/splunk/first_install.log  /opt/splunk/var/log
 
 ## If you are creating a golden image, run this command before locking to prevent duplicate guids etc
 # /opt/splunk/bin/splunk clone-prep-clear-config
+
+
 
 
