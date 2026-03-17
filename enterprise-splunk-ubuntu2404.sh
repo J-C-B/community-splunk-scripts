@@ -23,11 +23,15 @@ SPLUNK_SEED_PASSWORD='Bz9!SV8VdRiYiman'
 ## syslog-ng-ctl stats                                                                      ## See the stats for each filter
 
 
-# Create users
-adduser splunk
+# Create splunk group/user non-interactively (for unattended runs)
+if ! getent group splunk >/dev/null; then
+  groupadd splunk
+fi
 
-# Add users to group required
-groupadd splunk
+if ! id -u splunk >/dev/null 2>&1; then
+  useradd -m -s /bin/bash -g splunk splunk
+fi
+
 usermod -aG splunk splunk
 
 
