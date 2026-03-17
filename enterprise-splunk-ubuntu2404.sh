@@ -152,7 +152,7 @@ login_content = Welcome to Splunk, Splunk FTW! This is machine name ${SERVER_HOS
 echo "
 ## Created with JB Splunk Install script by magic
 [BANNER_MESSAGE_SINGLETON]
-global_banner.message = Welcome to Splunk, Splunk FTW! This is machine name ${SERVER_HOSTNAME}
+global_banner.message = This is Splunk machine name ${SERVER_HOSTNAME}
 global_banner.visible = 1
 " > /opt/splunk/etc/system/local/global-banner.conf
 
