@@ -139,14 +139,22 @@ disabled = 0
 
 # Enable SSL Login for Splunk
 echo "Enable WebUI TLS"
+SERVER_HOSTNAME="$(hostname)"
  
 echo "
 ## Created with JB Splunk Install script by magic
 [settings]
 httpport = 8000
 enableSplunkWebSSL = true
-login_content = Welcome to Splunk, Splunk FTW!
+login_content = Welcome to Splunk, Splunk FTW! This is machine name ${SERVER_HOSTNAME}
 " > /opt/splunk/etc/system/local/web.conf
+
+echo "
+## Created with JB Splunk Install script by magic
+[BANNER_MESSAGE_SINGLETON]
+global_banner.message = Welcome to Splunk, Splunk FTW! This is machine name ${SERVER_HOSTNAME}
+global_banner.visible = 1
+" > /opt/splunk/etc/system/local/global-banner.conf
 
 
 echo "Starting Splunk - fire it up!! and enabling Splunk to start at boot time with user=splunk "
