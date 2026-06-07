@@ -106,8 +106,8 @@ mkdir splunk
 #wget -O splunk-8.2.5-77015bc7a462-Linux-x86_64.tgz "https://download.splunk.com/products/splunk/releases/8.2.5/linux/splunk-8.2.5-77015bc7a462-Linux-x86_64.tgz"
 #wget -O splunk-9.0.1-82c987350fde-Linux-x86_64.tgz "https://download.splunk.com/products/splunk/releases/9.0.1/linux/splunk-9.0.1-82c987350fde-Linux-x86_64.tgz"
 #wget -O splunk-8.2.5-77015bc7a462-Linux-x86_64.tgz "https://download.splunk.com/products/splunk/releases/8.2.5/linux/splunk-8.2.5-77015bc7a462-Linux-x86_64.tgz"
-wget -O splunk-10.2.1-c892b66d163d-linux-amd64.tgz "https://download.splunk.com/products/splunk/releases/10.2.1/linux/splunk-10.2.1-c892b66d163d-linux-amd64.tgz"
-
+#wget -O splunk-10.2.1-c892b66d163d-linux-amd64.tgz "https://download.splunk.com/products/splunk/releases/10.2.1/linux/splunk-10.2.1-c892b66d163d-linux-amd64.tgz"
+wget -O splunk-10.4.0-f798d4d49089-linux-amd64.tgz "https://download.splunk.com/products/splunk/releases/10.4.0/linux/splunk-10.4.0-f798d4d49089-linux-amd64.tgz"
 
 #tar -xf splunk-7.2.5.1-962d9a8e1586-Linux-x86_64.tgz
 #tar -xf splunk-7.3.0-657388c7a488-Linux-x86_64.tgz
@@ -116,7 +116,8 @@ wget -O splunk-10.2.1-c892b66d163d-linux-amd64.tgz "https://download.splunk.com/
 #tar -xf splunk-8.2.0-e053ef3c985f-Linux-x86_64.tgz
 #tar -xf splunk-8.2.3-cd0848707637-Linux-x86_64.tgz
 #tar -xf splunk-8.2.5-77015bc7a462-Linux-x86_64.tgz
-tar -xf splunk-10.2.1-c892b66d163d-linux-amd64.tgz
+#tar -xf splunk-10.2.1-c892b66d163d-linux-amd64.tgz
+tar -xf splunk-10.4.0-f798d4d49089-linux-amd64.tgz
 
 
 chown -R splunk:splunk splunk
