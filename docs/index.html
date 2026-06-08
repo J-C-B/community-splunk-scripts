@@ -451,12 +451,263 @@
       }
     }
 
+    .flow-wrap {
+      margin-top: 26px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(12, 20, 36, 0.98), rgba(9, 15, 28, 0.98));
+      padding: 18px;
+      overflow: hidden;
+    }
+
+    .flow-wrap > p {
+      margin-top: 8px;
+      max-width: 760px;
+    }
+
+    .flow-diagram {
+      margin-top: 22px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      gap: 0;
+      padding: 8px 4px 4px;
+    }
+
+    .flow-node {
+      flex: 0 0 auto;
+      width: clamp(120px, 18vw, 154px);
+      text-align: center;
+      padding: 14px 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(15, 24, 43, 0.92);
+      position: relative;
+      transition: border-color 0.35s ease, box-shadow 0.35s ease, transform 0.35s ease;
+    }
+
+    .flow-icon {
+      width: 42px;
+      height: 42px;
+      margin: 0 auto 10px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #0a1020;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    }
+
+    .flow-label {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .flow-sub {
+      font-size: 0.78rem;
+      color: #8ea4c9;
+      line-height: 1.35;
+    }
+
+    .flow-connector {
+      flex: 1 1 72px;
+      min-width: 48px;
+      max-width: 120px;
+      position: relative;
+      align-self: center;
+      margin-top: 18px;
+      height: 28px;
+    }
+
+    .flow-track {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      height: 3px;
+      transform: translateY(-50%);
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(37, 51, 80, 0.9), rgba(78, 166, 255, 0.45));
+      overflow: hidden;
+    }
+
+    .flow-track::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(127, 240, 198, 0.55), transparent);
+      transform: translateX(-100%);
+      animation: flowShimmer 4s ease-in-out infinite;
+    }
+
+    .flow-packet {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 11px;
+      height: 11px;
+      margin-top: -5.5px;
+      border-radius: 999px;
+      background: var(--accent-2);
+      box-shadow: 0 0 10px rgba(127, 240, 198, 0.75);
+      animation: flowPacket 4s ease-in-out infinite;
+    }
+
+    .flow-connector:nth-of-type(2) .flow-packet,
+    .flow-connector:nth-of-type(2) .flow-track::after { animation-delay: 0.8s; }
+
+    .flow-connector:nth-of-type(4) .flow-packet,
+    .flow-connector:nth-of-type(4) .flow-track::after { animation-delay: 1.6s; }
+
+    .flow-connector:nth-of-type(6) .flow-packet,
+    .flow-connector:nth-of-type(6) .flow-track::after { animation-delay: 2.4s; }
+
+    .flow-connector:nth-of-type(8) .flow-packet,
+    .flow-connector:nth-of-type(8) .flow-track::after { animation-delay: 3.2s; }
+
+    .flow-edge-label {
+      position: absolute;
+      left: 50%;
+      top: -2px;
+      transform: translateX(-50%);
+      font-size: 0.68rem;
+      color: #9cb0d8;
+      white-space: nowrap;
+      letter-spacing: 0.02em;
+    }
+
+    .flow-legend {
+      margin-top: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 0.84rem;
+      color: var(--muted);
+    }
+
+    .flow-legend span {
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 4px 10px;
+      background: rgba(20, 31, 53, 0.55);
+    }
+
+    .flow-node[data-step="0"] { animation: flowNodePulse 4s ease-in-out infinite; }
+    .flow-node[data-step="1"] { animation: flowNodePulse 4s ease-in-out infinite 0.8s; }
+    .flow-node[data-step="2"] { animation: flowNodePulse 4s ease-in-out infinite 1.6s; }
+    .flow-node[data-step="3"] { animation: flowNodePulse 4s ease-in-out infinite 2.4s; }
+    .flow-node[data-step="4"] { animation: flowNodePulse 4s ease-in-out infinite 3.2s; }
+
+    @keyframes flowPacket {
+      0%, 8% { left: 0; opacity: 0; }
+      12% { opacity: 1; }
+      28% { left: calc(100% - 11px); opacity: 1; }
+      32%, 100% { left: calc(100% - 11px); opacity: 0; }
+    }
+
+    @keyframes flowShimmer {
+      0%, 8% { transform: translateX(-100%); opacity: 0; }
+      12% { opacity: 1; }
+      28% { transform: translateX(100%); opacity: 1; }
+      32%, 100% { transform: translateX(100%); opacity: 0; }
+    }
+
+    @keyframes flowNodePulse {
+      0%, 6%, 30%, 100% {
+        border-color: var(--border);
+        box-shadow: none;
+        transform: translateY(0);
+      }
+      12%, 22% {
+        border-color: #5b8fd4;
+        box-shadow: 0 0 0 1px rgba(78, 166, 255, 0.25), 0 0 24px rgba(78, 166, 255, 0.18);
+        transform: translateY(-2px);
+      }
+    }
+
+    @media (max-width: 760px) {
+      .flow-diagram {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        padding: 0;
+      }
+
+      .flow-node {
+        width: 100%;
+      }
+
+      .flow-connector {
+        flex: none;
+        width: 28px;
+        min-width: 28px;
+        max-width: none;
+        height: 56px;
+        margin: 0 auto;
+      }
+
+      .flow-track {
+        left: 50%;
+        right: auto;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        height: auto;
+        transform: translateX(-50%);
+      }
+
+      .flow-track::after {
+        transform: translateY(-100%);
+        background: linear-gradient(180deg, transparent, rgba(127, 240, 198, 0.55), transparent);
+        animation-name: flowShimmerVertical;
+      }
+
+      .flow-packet {
+        left: 50%;
+        top: 0;
+        margin-top: 0;
+        margin-left: -5.5px;
+        animation-name: flowPacketVertical;
+      }
+
+      .flow-edge-label {
+        left: calc(50% + 14px);
+        top: 50%;
+        transform: translateY(-50%);
+      }
+
+      @keyframes flowPacketVertical {
+        0%, 8% { top: 0; opacity: 0; }
+        12% { opacity: 1; }
+        28% { top: calc(100% - 11px); opacity: 1; }
+        32%, 100% { top: calc(100% - 11px); opacity: 0; }
+      }
+
+      @keyframes flowShimmerVertical {
+        0%, 8% { transform: translateY(-100%); opacity: 0; }
+        12% { opacity: 1; }
+        28% { transform: translateY(100%); opacity: 1; }
+        32%, 100% { transform: translateY(100%); opacity: 0; }
+      }
+    }
+
     @media (prefers-reduced-motion: reduce) {
       .stage-item,
       .stage-item .stage-dot,
-      .progress-bar {
+      .progress-bar,
+      .flow-packet,
+      .flow-track::after,
+      .flow-node {
         transition: none;
         animation: none;
+      }
+
+      .flow-node[data-step="0"] {
+        border-color: #5b8fd4;
+        box-shadow: 0 0 0 1px rgba(78, 166, 255, 0.25), 0 0 24px rgba(78, 166, 255, 0.18);
       }
     }
   </style>
@@ -509,6 +760,74 @@
           <a class="secondary" href="https://github.com/J-C-B/community-splunk-scripts/issues">Report issue</a>
         </div>
       </article>
+    </section>
+
+    <section class="flow-wrap" aria-label="Build process flow visualization">
+      <h2>Build Flow</h2>
+      <p>
+        Animated view of the installer lifecycle: host preparation, Splunk setup, configuration, and readiness validation.
+      </p>
+
+      <div class="flow-diagram">
+        <div class="flow-node" data-step="0">
+          <div class="flow-icon" aria-hidden="true">OS</div>
+          <div class="flow-label">Configure OS</div>
+          <div class="flow-sub">users, groups,<br>THP, limits</div>
+        </div>
+
+        <div class="flow-connector" aria-hidden="true">
+          <span class="flow-edge-label">system prep</span>
+          <div class="flow-track"></div>
+          <div class="flow-packet"></div>
+        </div>
+
+        <div class="flow-node" data-step="1">
+          <div class="flow-icon" aria-hidden="true">PK</div>
+          <div class="flow-label">Install Tools</div>
+          <div class="flow-sub">apt update,<br>base packages</div>
+        </div>
+
+        <div class="flow-connector" aria-hidden="true">
+          <span class="flow-edge-label">artifact fetch</span>
+          <div class="flow-track"></div>
+          <div class="flow-packet"></div>
+        </div>
+
+        <div class="flow-node" data-step="2">
+          <div class="flow-icon" aria-hidden="true">SP</div>
+          <div class="flow-label">Install Splunk</div>
+          <div class="flow-sub">download, extract,<br>ownership</div>
+        </div>
+
+        <div class="flow-connector" aria-hidden="true">
+          <span class="flow-edge-label">app config</span>
+          <div class="flow-track"></div>
+          <div class="flow-packet"></div>
+        </div>
+
+        <div class="flow-node" data-step="3">
+          <div class="flow-icon" aria-hidden="true">CF</div>
+          <div class="flow-label">Configure Splunk</div>
+          <div class="flow-sub">listener, TLS,<br>banner + seed</div>
+        </div>
+
+        <div class="flow-connector" aria-hidden="true">
+          <span class="flow-edge-label">service up</span>
+          <div class="flow-track"></div>
+          <div class="flow-packet"></div>
+        </div>
+
+        <div class="flow-node" data-step="4">
+          <div class="flow-icon" aria-hidden="true">OK</div>
+          <div class="flow-label">Validate</div>
+          <div class="flow-sub">start, endpoint,<br>operator checks</div>
+        </div>
+      </div>
+
+      <div class="flow-legend">
+        <span>Designed for unattended bootstrap on fresh Ubuntu hosts</span>
+        <span>Flow mirrors the executable order in the enterprise installer</span>
+      </div>
     </section>
 
     <section class="pipeline-wrap" aria-label="Script build process visualization">
