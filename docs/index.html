@@ -146,6 +146,247 @@
       padding: 18px;
     }
 
+    .pipeline-wrap {
+      margin-top: 26px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(12, 20, 36, 0.98), rgba(9, 15, 28, 0.98));
+      padding: 18px;
+    }
+
+    .pipeline-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .pipeline-head p {
+      max-width: 720px;
+    }
+
+    .pipeline-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    button.btn {
+      cursor: pointer;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: rgba(20, 31, 53, 0.78);
+      color: var(--text);
+      padding: 7px 12px;
+      font-weight: 600;
+      font-size: 0.86rem;
+    }
+
+    button.btn:hover {
+      border-color: #3f5f9b;
+    }
+
+    .pipeline-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: 1.05fr 1fr;
+    }
+
+    .stage-list {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(15, 24, 43, 0.92);
+      padding: 14px 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stage-list::before {
+      content: "";
+      position: absolute;
+      left: 27px;
+      top: 18px;
+      bottom: 18px;
+      width: 2px;
+      background: linear-gradient(180deg, rgba(76, 125, 201, 0.35), rgba(127, 240, 198, 0.2));
+      pointer-events: none;
+    }
+
+    .stage-item {
+      position: relative;
+      padding: 10px 10px 10px 34px;
+      border-radius: 10px;
+      margin-bottom: 7px;
+      border: 1px solid transparent;
+      transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease;
+    }
+
+    .stage-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .stage-dot {
+      position: absolute;
+      left: 8px;
+      top: 17px;
+      width: 13px;
+      height: 13px;
+      border-radius: 999px;
+      border: 2px solid #5677b4;
+      background: #17253f;
+      transition: all 0.25s ease;
+    }
+
+    .stage-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin-bottom: 2px;
+      color: var(--text);
+    }
+
+    .stage-desc {
+      font-size: 0.86rem;
+      color: #9cb0d8;
+    }
+
+    .stage-item.active {
+      background: rgba(30, 48, 79, 0.68);
+      border-color: #4469a8;
+      transform: translateX(3px);
+    }
+
+    .stage-item.active .stage-dot {
+      border-color: #7ff0c6;
+      background: #7ff0c6;
+      box-shadow: 0 0 0 6px rgba(127, 240, 198, 0.13);
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+
+    .stage-item.done .stage-dot {
+      border-color: #8ce99a;
+      background: #8ce99a;
+      box-shadow: 0 0 0 4px rgba(140, 233, 154, 0.12);
+    }
+
+    .terminal {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #0b1220;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      min-height: 320px;
+    }
+
+    .terminal-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 12px;
+      border-bottom: 1px solid #1f2f4d;
+      background: #0e1729;
+    }
+
+    .terminal-dots {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .terminal-dots i {
+      display: block;
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+    }
+
+    .terminal-dots i:nth-child(1) {
+      background: #ff5f56;
+    }
+
+    .terminal-dots i:nth-child(2) {
+      background: #ffbd2e;
+    }
+
+    .terminal-dots i:nth-child(3) {
+      background: #27c93f;
+    }
+
+    .terminal-meta {
+      font-size: 0.8rem;
+      color: #b8c4de;
+    }
+
+    .terminal-body {
+      padding: 12px;
+      overflow: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, monospace;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: #bfd3f3;
+      flex: 1;
+      max-height: 340px;
+    }
+
+    .terminal-line {
+      margin-bottom: 4px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .terminal-line.prompt {
+      color: #7ff0c6;
+    }
+
+    .terminal-line.okline {
+      color: #9be9ac;
+    }
+
+    .terminal-line.warnline {
+      color: #ffd166;
+    }
+
+    .terminal-line.dim {
+      color: #8ea4c9;
+    }
+
+    .progress {
+      padding: 10px 12px 12px;
+      border-top: 1px solid #1f2f4d;
+      background: #0d172a;
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.79rem;
+      color: #b8c4de;
+      margin-bottom: 6px;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      border-radius: 999px;
+      background: #1f2c47;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #4ea6ff, #7ff0c6);
+      transition: width 0.4s ease;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(127, 240, 198, 0.35); }
+      70% { box-shadow: 0 0 0 8px rgba(127, 240, 198, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(127, 240, 198, 0); }
+    }
+
     .note {
       margin-top: 12px;
       border: 1px dashed #3f4d71;
@@ -203,6 +444,21 @@
       color: #8d9ab6;
       font-size: 0.88rem;
     }
+
+    @media (max-width: 900px) {
+      .pipeline-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .stage-item,
+      .stage-item .stage-dot,
+      .progress-bar {
+        transition: none;
+        animation: none;
+      }
+    }
   </style>
 </head>
 <body>
@@ -255,6 +511,41 @@
       </article>
     </section>
 
+    <section class="pipeline-wrap" aria-label="Script build process visualization">
+      <div class="pipeline-head">
+        <div>
+          <h2>Build Process Visualizer</h2>
+          <p>
+            A live simulation of how the Enterprise installer runs, with stage-by-stage progress and terminal output.
+          </p>
+        </div>
+        <div class="pipeline-actions">
+          <button class="btn" id="replayBtn" type="button">Replay</button>
+          <button class="btn" id="stepBtn" type="button">Step mode</button>
+        </div>
+      </div>
+
+      <div class="pipeline-grid">
+        <div class="stage-list" id="stageList"></div>
+        <div class="terminal">
+          <div class="terminal-bar">
+            <div class="terminal-dots"><i></i><i></i><i></i></div>
+            <div class="terminal-meta">enterprise-splunk-ubuntu2404.sh</div>
+          </div>
+          <div class="terminal-body" id="terminalBody" aria-live="polite"></div>
+          <div class="progress">
+            <div class="progress-label">
+              <span id="progressText">Initializing...</span>
+              <span id="progressPct">0%</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-bar" id="progressBar"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="section">
       <h2>Quick Start</h2>
       <ul>
@@ -279,5 +570,194 @@
       Built for operators who prefer fast, practical Splunk bootstrap automation.
     </footer>
   </main>
+  <script>
+    (function () {
+      const stages = [
+        {
+          title: "Create local identity",
+          desc: "Ensure splunk user/group exist for unattended install",
+          lines: [
+            "$ if ! getent group splunk >/dev/null; then groupadd splunk; fi",
+            "[ok] group verified: splunk",
+            "$ if ! id -u splunk >/dev/null 2>&1; then useradd -m -s /bin/bash -g splunk splunk; fi",
+            "[ok] user verified: splunk"
+          ]
+        },
+        {
+          title: "Host performance tuning",
+          desc: "Disable THP and set systemd resource limits",
+          lines: [
+            "$ cat /sys/kernel/mm/transparent_hugepage/enabled",
+            "[always] madvise never",
+            "$ systemctl enable disable-thp",
+            "[ok] THP disable unit active"
+          ]
+        },
+        {
+          title: "Install prerequisites",
+          desc: "Refresh apt and install base tooling",
+          lines: [
+            "$ apt update -y",
+            "[ok] package indexes refreshed",
+            "$ apt install nano wget tcpdump multitail htop iptraf-ng -y",
+            "[ok] dependencies installed"
+          ]
+        },
+        {
+          title: "Download and extract Splunk",
+          desc: "Fetch release tarball and unpack under /opt/splunk",
+          lines: [
+            "$ wget -O splunk-10.4.0...tgz https://download.splunk.com/...",
+            "[ok] downloaded release artifact",
+            "$ tar -xf splunk-10.4.0...tgz",
+            "[ok] unpack complete"
+          ]
+        },
+        {
+          title: "Write runtime configs",
+          desc: "Enable listener, TLS web UI, and global banner",
+          lines: [
+            "$ touch /opt/splunk/etc/.ui_login",
+            "[ok] first login tour disabled",
+            "$ write web.conf and global-banner.conf",
+            "[ok] hostname banner templates applied"
+          ]
+        },
+        {
+          title: "Enable boot and start",
+          desc: "Seed password, register startup, and launch Splunk",
+          lines: [
+            "$ /opt/splunk/bin/splunk enable boot-start ... --seed-passwd \"$SPLUNK_SEED_PASSWORD\"",
+            "[ok] boot-start enabled",
+            "$ /opt/splunk/bin/splunk start",
+            "[ok] splunkd started"
+          ]
+        },
+        {
+          title: "Validation checkpoint",
+          desc: "Confirm endpoint and surface operator details",
+          lines: [
+            "$ curl -k https://localhost:8000",
+            "[warn] cert is self-signed on first boot (expected)",
+            "[ok] web endpoint reachable",
+            "[done] installation complete"
+          ]
+        }
+      ];
+
+      const stageList = document.getElementById("stageList");
+      const terminalBody = document.getElementById("terminalBody");
+      const progressBar = document.getElementById("progressBar");
+      const progressText = document.getElementById("progressText");
+      const progressPct = document.getElementById("progressPct");
+      const replayBtn = document.getElementById("replayBtn");
+      const stepBtn = document.getElementById("stepBtn");
+      const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      let stageIndex = -1;
+      let timer = null;
+      let stepMode = false;
+
+      function renderStages() {
+        stageList.innerHTML = stages.map(function (stage, idx) {
+          return `
+            <div class="stage-item" data-stage="${idx}">
+              <span class="stage-dot"></span>
+              <div class="stage-title">${stage.title}</div>
+              <div class="stage-desc">${stage.desc}</div>
+            </div>
+          `;
+        }).join("");
+      }
+
+      function appendTerminal(line) {
+        const div = document.createElement("div");
+        div.className = "terminal-line";
+        if (line.startsWith("$")) div.classList.add("prompt");
+        else if (line.startsWith("[ok]") || line.startsWith("[done]")) div.classList.add("okline");
+        else if (line.startsWith("[warn]")) div.classList.add("warnline");
+        else div.classList.add("dim");
+        div.textContent = line;
+        terminalBody.appendChild(div);
+        terminalBody.scrollTop = terminalBody.scrollHeight;
+      }
+
+      function updateProgress() {
+        const done = Math.max(stageIndex + 1, 0);
+        const pct = Math.round((done / stages.length) * 100);
+        progressBar.style.width = pct + "%";
+        progressPct.textContent = pct + "%";
+        progressText.textContent = done >= stages.length
+          ? "Build simulation complete"
+          : "Running: " + stages[Math.max(stageIndex, 0)].title;
+      }
+
+      function markStages() {
+        const items = stageList.querySelectorAll(".stage-item");
+        items.forEach(function (item, idx) {
+          item.classList.remove("active", "done");
+          if (idx < stageIndex) item.classList.add("done");
+          if (idx === stageIndex) item.classList.add("active");
+        });
+      }
+
+      function runNextStage() {
+        stageIndex += 1;
+
+        if (stageIndex >= stages.length) {
+          markStages();
+          updateProgress();
+          clearTimeout(timer);
+          timer = null;
+          return;
+        }
+
+        markStages();
+        updateProgress();
+
+        const stage = stages[stageIndex];
+        appendTerminal("");
+        appendTerminal("$ echo \"== " + stage.title + " ==\"");
+        stage.lines.forEach(appendTerminal);
+
+        if (!stepMode) {
+          const delay = prefersReduced ? 500 : 1200;
+          timer = setTimeout(runNextStage, delay);
+        }
+      }
+
+      function startSimulation() {
+        clearTimeout(timer);
+        timer = null;
+        stageIndex = -1;
+        terminalBody.innerHTML = "";
+        appendTerminal("[sim] Starting enterprise script pipeline...");
+        updateProgress();
+        runNextStage();
+      }
+
+      replayBtn.addEventListener("click", startSimulation);
+
+      stepBtn.addEventListener("click", function () {
+        stepMode = !stepMode;
+        stepBtn.textContent = stepMode ? "Auto mode" : "Step mode";
+        if (stepMode) {
+          clearTimeout(timer);
+          timer = null;
+        } else if (stageIndex < stages.length - 1) {
+          runNextStage();
+        }
+      });
+
+      stageList.addEventListener("click", function () {
+        if (stepMode && stageIndex < stages.length - 1) {
+          runNextStage();
+        }
+      });
+
+      renderStages();
+      startSimulation();
+    })();
+  </script>
 </body>
 </html>
