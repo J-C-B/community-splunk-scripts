@@ -42,7 +42,7 @@ firewall-cmd --reload
 #Check applied
 firewall-cmd --list-all
 
-dnf install -y conntrack podman
+sudo apt install conntrack podman -y
 echo "
 ## Edited with JB Splunk Install script by magic
 net.core.rmem_default = 17039360
