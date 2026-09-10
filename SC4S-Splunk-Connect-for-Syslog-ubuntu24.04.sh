@@ -1,9 +1,10 @@
 #!/bin/bash
 # 14/03/2022 John Barnett
-# Script created on / for CentOS 8
+# Script created on / for Ubuntu 24.4
 
 # 21/07/2021 - Added TLS Remix, added TLS listener - note creates a default cert below so edit / remove as required
 # 14/03/2022 - Updated default container pull to version 2
+# 11/09/2026 - Updated to version SC4s v3
 
 ### Based on quick start here - https://splunk.github.io/splunk-connect-for-syslog/main/gettingstarted/podman-systemd-general/
 
@@ -29,19 +30,8 @@ yellow=`tput setaf 3`
 reset=`tput sgr0`
 echo "${yellow}Check date and TZ below!${reset}"
 date 
-echo "${yellow}Updating Firewall Rules${reset}"
-#Show original state
-firewall-cmd --list-all
-#Splunk ports
-firewall-cmd --zone=public --add-port=514/tcp --permanent # syslog TCP
-firewall-cmd --zone=public --add-port=514/udp --permanent # syslog UDP
-firewall-cmd --zone=public --add-port=6514/tcp --permanent # syslog TLS
-firewall-cmd --zone=public --add-port=5425/tcp --permanent # syslog
-firewall-cmd --zone=public --add-port=601/tcp --permanent # syslog
-firewall-cmd --reload
-#Check applied
-firewall-cmd --list-all
 
+sudo apt update
 sudo apt install conntrack podman -y
 echo "
 ## Edited with JB Splunk Install script by magic
@@ -63,24 +53,25 @@ After=NetworkManager.service network-online.target
 WantedBy=multi-user.target
 
 [Service]
-Environment=\"SC4S_IMAGE=ghcr.io/splunk/splunk-connect-for-syslog/container2:2\"
+Environment=\"SC4S_IMAGE=ghcr.io/splunk/splunk-connect-for-syslog/container3:latest\"
 
 # Required mount point for syslog-ng persist data (including disk buffer)
 Environment=\"SC4S_PERSIST_MOUNT=splunk-sc4s-var:/var/lib/syslog-ng\"
 
 # Optional mount point for local overrides and configurations; see notes in docs
-Environment=\"SC4S_LOCAL_MOUNT=/opt/sc4s/local:/etc/syslog-ng/conf.d/local:z\"
+Environment=\"SC4S_LOCAL_MOUNT=/opt/splunk/sc4s/local:/etc/syslog-ng/conf.d/local:z\"
 
 # Optional mount point for local disk archive (EWMM output) files
-Environment=\"SC4S_ARCHIVE_MOUNT=/opt/sc4s/archive:/var/lib/syslog-ng/archive:z\"
+Environment=\"SC4S_ARCHIVE_MOUNT=/opt/splunk/sc4s/archive:/var/lib/syslog-ng/archive:z\"
 
 # Uncomment the following line if custom TLS certs are provided
-Environment=\"SC4S_TLS_MOUNT=/opt/sc4s/tls:/etc/syslog-ng/tls:z\"
+Environment=\"SC4S_TLS_MOUNT=/opt/splunk/sc4s/tls:/etc/syslog-ng/tls:z\"
 
 TimeoutStartSec=0
 
 ExecStartPre=/usr/bin/podman pull \$SC4S_IMAGE
 ExecStartPre=/usr/bin/bash -c \"/usr/bin/systemctl set-environment SC4SHOST=$(hostname -s)\"
+ExecStartPre=/usr/bin/bash -c \"/usr/bin/podman rm SC4S > /dev/null 2>&1 || true\"
 
 ExecStart=/usr/bin/podman run \\
         -e \"SC4S_CONTAINER_HOST=\${SC4SHOST}\" \\
@@ -88,15 +79,15 @@ ExecStart=/usr/bin/podman run \\
         -v \$SC4S_LOCAL_MOUNT \\
         -v \$SC4S_ARCHIVE_MOUNT \\
         -v \$SC4S_TLS_MOUNT \\
-        --env-file=/opt/sc4s/env_file \\
-        --health-cmd="/healthcheck.sh" \\
-        --health-interval=10s --health-retries=6 --health-timeout=6s \\
+        --env-file=/opt/splunk/sc4s/env_file \\
+        --health-cmd=\"/usr/sbin/syslog-ng-ctl healthcheck --timeout 5\" \\
+        --health-interval=2m --health-retries=6 --health-timeout=5s \\
         --network host \\
         --name SC4S \\
         --rm \$SC4S_IMAGE
 
-Restart=on-abnormal
-" > /lib/systemd/system/sc4s.service
+Restart=on-failure
+" | sudo tee /lib/systemd/system/sc4s.service > /dev/null
 
 
 sudo podman volume create splunk-sc4s-var
@@ -134,7 +125,7 @@ sudo podman ps
 
 # Sleep to allow TLS to come up
 sleep 20
-netstat -tulpn | grep LISTEN
+ss -tulpn
 
 #### Use command below and then type to test
 #openssl s_client -connect localhost:6514
